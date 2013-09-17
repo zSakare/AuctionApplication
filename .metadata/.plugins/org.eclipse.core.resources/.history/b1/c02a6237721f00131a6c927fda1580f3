@@ -1,0 +1,386 @@
+package main.controller;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Logger;
+
+
+/**
+ * Servlet implementation class ControllerServlet
+ */
+@WebServlet(name="ControllerServlet",urlPatterns={"/ControllerServlet","/","/home"})
+public class BasicController extends HttpServlet {
+	final Logger logger = Logger.getLogger(this.getClass().getName());
+	private static final long serialVersionUID = 1L;
+	private static final String SEARCH = "search";
+	private static final String CHANGE_LIST = "changeList";
+	private static final String NEXT = "next";
+	private static final String PREVIOUS = "previous";
+	private static final String READING = "reading";
+	private static final String ADD = "add";
+	private static final String SHOW_LIST = "showList";
+	private static final String HOME = "home";
+	private static final String ACTION = "action";
+	private static final String SECTION = "section";
+	private static final String SOURCE = "source";
+	private static final String GO_BACK = "goBack";
+	private static final int FIRST_PAGE = 1;
+	private static final String GO_BACK_VALUE = "Go Back";
+       
+	private List<Article> articles;
+	
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public ControllerServlet() {
+ 
+    }
+    
+    public void init(){
+    	articles = MedlineParser.parse(getServletContext().getRealPath("/WEB-INF/medsamp2011.xml"));
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (SEARCH.equals(request.getParameter(ACTION))) {
+			// Get all required search fields
+			String authorString = request.getParameter("author");
+			String articleTitle = request.getParameter("article");
+			String journalTitle = request.getParameter("journal");
+			int resultsPerPage = 10;
+			try {
+				resultsPerPage = Integer.parseInt(request.getParameter("numResults"));
+			} catch (NumberFormatException e) {
+				resultsPerPage = 10;
+				UserPreferences preferences = (UserPreferences) request.getSession().getAttribute("preferences");
+				if (preferences == null) {
+					preferences = new UserPreferences();
+				}
+				preferences.setPreviousPage("index");
+				preferences.setError("Results per page expects a numeric input.");
+				response.sendRedirect("error.jsp");
+				return;
+			}
+			
+			// Populate search results.
+			SearchResults results = getSearchResults(request);
+			results = populateSearchResults(authorString, articleTitle,
+					journalTitle, resultsPerPage, results);
+			
+			// Set the results in session for JSP to take.
+			request.getSession().setAttribute("results", results);
+			// Redirect user to results page.
+			response.sendRedirect("results.jsp");
+		} else if (NEXT.equals(request.getParameter(ACTION)) && SEARCH.equals(request.getParameter(SECTION))) {
+			// Grab search results bean to get required information to shift page across.
+			SearchResults results = getSearchResults(request);
+			moveNextPage(results);
+			
+			// Send them forward a result page.
+			response.sendRedirect("results.jsp");
+		} else if (PREVIOUS.equals(request.getParameter(ACTION)) && SEARCH.equals(request.getParameter(SECTION))) {
+			// Get the search results bean so we can work out what will be on previous page.
+			SearchResults results = getSearchResults(request);
+			movePreviousPage(results);
+			
+			// Send the user backwards a result page.
+			response.sendRedirect("results.jsp");
+		} else if (SHOW_LIST.equals(request.getParameter(ACTION))) {
+			// Get the user preferences and set where we came from.
+			UserPreferences preferences = getUserPreferences(request);
+			String source = request.getParameter(SOURCE);
+			
+			if (source.equals(HOME)) {
+				preferences.setPreviousPage("index");
+			} else {
+				preferences.setPreviousPage(source);
+			}
+			
+			SearchResults results = getSearchResults(request);
+			
+			setupUserPreferences(preferences, results);
+			
+			// Redirect the user to the reading list page:
+			response.sendRedirect("list.jsp");
+			
+		} else if (NEXT.equals(request.getParameter(ACTION)) && READING.equals(request.getParameter(SECTION))) {
+			SearchResults results = getSearchResults(request);
+			UserPreferences preferences = getUserPreferences(request);
+			
+			moveNextReadingListPage(results, preferences);
+			
+			// Move user forward one reading list page.
+			response.sendRedirect("list.jsp");
+		} else if (PREVIOUS.equals(request.getParameter(ACTION)) && READING.equals(request.getParameter(SECTION))) {
+			SearchResults results = getSearchResults(request);
+			UserPreferences preferences = getUserPreferences(request);
+			
+			movePreviousReadingListPage(results, preferences);
+			
+			// Move user back one reading list page.
+			response.sendRedirect("list.jsp");
+		} else if (GO_BACK_VALUE.equals(request.getParameter(GO_BACK))) {
+			UserPreferences preferences = getUserPreferences(request);
+			if (preferences.getPreviousPage() == null) {
+				preferences.setPreviousPage("index");
+			}
+			response.sendRedirect(preferences.getPreviousPage() + ".jsp");
+		}
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (ADD.equals(request.getParameter(ACTION))) {
+			addToReadingList(request);
+			
+			// Leave user at search results after appending to reading list.
+			response.sendRedirect("results.jsp");
+		} else if (CHANGE_LIST.equals(request.getParameter(ACTION))) {
+			UserPreferences preferences = getUserPreferences(request);
+			SearchResults results = getSearchResults(request);
+			
+			// Check which button was pressed
+			if (request.getParameter("removeFromList") != null) {
+				// User clicked remove from list. Remove selected elements.
+				removeFromReadingList(request, preferences, results);
+				
+			} else {
+				// User clicked clear list, clear reading list.
+				preferences.setReadingList(new ArrayList<Article>());
+				preferences.setPageView(new ArrayList<Article>());
+				preferences.setNextPage(false);
+				preferences.setPrevPage(false);
+				preferences.setCurrentPage(FIRST_PAGE);
+			}
+			
+			// Show them updated list.
+			response.sendRedirect("list.jsp");
+		}
+	}
+
+	// --------- HELPER FUNCTIONS ---------
+	private List<Article> searchArticles(String authorString, String articleTitle, String journalTitle) {
+		List<Article> filteredArticles = new ArrayList<Article>();
+		filteredArticles.addAll(articles);
+		List<Article> articlesToRemove = new ArrayList<Article>();
+		
+		// Filter on author strings.
+		if (authorString != null && !authorString.isEmpty()) {
+			authorString.replaceAll(" ", "");
+			List<String> lastNames = Arrays.asList(authorString.split(","));
+			for (Article article : filteredArticles) {
+				if (article != null) {
+					Set<String> caseInsensitiveAuthors = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+					caseInsensitiveAuthors.addAll(article.getAuthorLastNames());
+					Set<String> caseInsensitiveLastNames = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+					caseInsensitiveLastNames.addAll(lastNames);
+					if (!caseInsensitiveAuthors.containsAll(caseInsensitiveLastNames)) {
+						articlesToRemove.add(article);
+					}
+				}
+			}
+			filteredArticles.removeAll(articlesToRemove);
+		}
+		
+		// Filter on article title.
+		articlesToRemove.clear();
+		if (articleTitle != null && !articleTitle.isEmpty()) {
+			List<String> articleTitles = Arrays.asList(articleTitle.split(" "));
+			for (Article article : filteredArticles) {
+				Set<String> caseInsensitiveArticles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+				caseInsensitiveArticles.addAll((Arrays.asList(article.getArticleTitle().split("[ ,.]"))));
+				Set<String> caseInsensitiveTitles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+				caseInsensitiveTitles.addAll(articleTitles);
+				if (!caseInsensitiveArticles.containsAll(caseInsensitiveTitles)) {
+					articlesToRemove.add(article);
+				}
+			}
+		}
+		filteredArticles.removeAll(articlesToRemove);
+		
+		// Filter on journal title.
+		articlesToRemove.clear();
+		if (journalTitle != null && !journalTitle.isEmpty()) {
+			List<String> journalTitles = Arrays.asList(journalTitle.split(" "));
+			for (Article article : filteredArticles) {
+				Set<String> caseInsensitiveJournals = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+				caseInsensitiveJournals.addAll((Arrays.asList(article.getJournalTitle().split("[ ,.]"))));
+				Set<String> caseInsensitiveTitles = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+				caseInsensitiveTitles.addAll(journalTitles);
+				if (!caseInsensitiveJournals.containsAll(caseInsensitiveTitles)) {
+					articlesToRemove.add(article);
+				}
+			}
+		}
+		filteredArticles.removeAll(articlesToRemove);
+		return filteredArticles;
+	}
+	
+	private SearchResults populateSearchResults(String authorString,
+			String articleTitle, String journalTitle, int resultsPerPage,
+			SearchResults results) {
+		results.setArticlesPerPage(resultsPerPage);
+		results.setArticles(searchArticles(authorString, articleTitle, journalTitle));
+		if (results.getArticles().size() <= resultsPerPage) {
+			results.setNextPage(false);
+		} else {
+			results.setNextPage(true);
+		}
+		results.setPreviousPage(false);
+		if (results.getArticles().size() >= 0) {
+			if (results.getNextPage()) {
+				results.setPageView(new ArrayList<Article>(results.getArticles().subList(0, results.getArticlesPerPage())));
+			} else {
+				results.setPageView(new ArrayList<Article>(results.getArticles()));
+			}
+		}
+		results.setCurrentPage(FIRST_PAGE);
+		return results;
+	}
+
+	private void moveNextPage(SearchResults results) {
+		int currentPage = results.getCurrentPage();
+		// Check if we have enough articles to display on a single page, else do not allow next page button.
+		if (currentPage*results.getArticlesPerPage() >= results.getArticles().size()) {
+			results.setPageView(new ArrayList<Article>(results.getArticles().subList(currentPage*results.getArticlesPerPage(), results.getArticles().size())));
+			results.setNextPage(false);
+		} else {
+			results.setPageView(new ArrayList<Article>(results.getArticles().subList(currentPage*results.getArticlesPerPage(), (currentPage+1)*results.getArticlesPerPage())));
+			results.setNextPage(true);
+		}
+		results.setCurrentPage((currentPage+1));
+		// There has to be a previous page because we came from there.
+		results.setPreviousPage(true);
+	}
+
+	private void movePreviousPage(SearchResults results) {
+		int currentPage = results.getCurrentPage();
+		// Move the user back a page.
+		results.setPageView(new ArrayList<Article>(results.getArticles().subList((currentPage-2)*results.getArticlesPerPage(), (currentPage-1)*results.getArticlesPerPage())));
+		results.setCurrentPage((currentPage-1));
+		results.setNextPage(true);
+		// Check if we're on the first page, if we are there cannot be any previous pages.
+		if (results.getCurrentPage() == FIRST_PAGE) {
+			results.setPreviousPage(false);
+		} else {
+			results.setPreviousPage(true);
+		}
+	}
+
+	private void setupUserPreferences(UserPreferences preferences,
+			SearchResults results) {
+		// Setup required reading list items and the required details to do pagination.
+		if (preferences.getReadingList().size() <= results.getArticlesPerPage()) {
+			preferences.setNextPage(false);
+		} else {
+			preferences.setNextPage(true);
+		}
+		preferences.setPrevPage(false);
+		if (preferences.getReadingList().size() > 0) { 
+			if (preferences.getNextPage()) {
+				preferences.setPageView(new ArrayList<Article>(preferences.getReadingList().subList(0, results.getArticlesPerPage())));
+			} else {
+				preferences.setPageView(new ArrayList<Article>(preferences.getReadingList()));
+			}
+		}
+		preferences.setCurrentPage(FIRST_PAGE);
+	}
+	
+	private void moveNextReadingListPage(SearchResults results,
+			UserPreferences preferences) {
+		int currentPage = preferences.getCurrentPage();
+		// Check if we have enough articles to display on a single page, else do not allow next page button.
+		if (currentPage*results.getArticlesPerPage() >= preferences.getReadingList().size()) {
+			preferences.setPageView(new ArrayList<Article>(preferences.getReadingList().subList(currentPage*results.getArticlesPerPage(), preferences.getReadingList().size())));
+			preferences.setNextPage(false);
+		} else {
+			preferences.setPageView(new ArrayList<Article>(preferences.getReadingList().subList(currentPage*results.getArticlesPerPage(), (currentPage+1)*results.getArticlesPerPage())));
+			preferences.setNextPage(true);
+		}
+		preferences.setCurrentPage((currentPage+1));
+		// There has to be a previous page because we came from there.
+		preferences.setPrevPage(true);
+	}
+
+	private void movePreviousReadingListPage(SearchResults results,
+			UserPreferences preferences) {
+		int currentPage = preferences.getCurrentPage();
+		// Move the user back a page.
+		preferences.setPageView(new ArrayList<Article>(preferences.getReadingList().subList((currentPage-2)*results.getArticlesPerPage(), (currentPage-1)*results.getArticlesPerPage())));
+		preferences.setCurrentPage((currentPage-1));
+		preferences.setNextPage(true);
+		// Check if we're on the first page, if we are there cannot be any previous pages.
+		if (preferences.getCurrentPage() == FIRST_PAGE) {
+			preferences.setPrevPage(false);
+		} else {
+			preferences.setPrevPage(true);
+		}
+	}
+	
+	private SearchResults getSearchResults(HttpServletRequest request) {
+		SearchResults results = (SearchResults) request.getSession().getAttribute("results");
+		if (results == null) {
+			results = new SearchResults();
+		} else if (results.getArticles() == null) {
+			results.setArticles(new ArrayList<Article>());
+			results.setPageView(new ArrayList<Article>());
+		}
+		
+		return results;
+	}
+	
+	private UserPreferences getUserPreferences(HttpServletRequest request) {
+		UserPreferences preferences = (UserPreferences) request.getSession().getAttribute("preferences");
+		
+		if (preferences == null) {
+			preferences = new UserPreferences();
+		} else if (preferences.getReadingList() == null) {
+			preferences.setReadingList(new ArrayList<Article>());
+			preferences.setPageView(new ArrayList<Article>());
+		}
+		
+		return preferences;
+	}
+	
+	private void removeFromReadingList(HttpServletRequest request,
+			UserPreferences preferences, SearchResults results) {
+		int articles = preferences.getPageView().size();
+		List<Article> removeList = new ArrayList<Article>();
+		
+		for (int i = 0; i < articles; i++) {
+			String checked = request.getParameter("selected" + i);
+			if (checked != null) {
+				int articleIndex = Integer.parseInt(checked);
+
+				removeList.add(preferences.getPageView().get(articleIndex));
+			}
+		}
+		
+		preferences.getReadingList().removeAll(removeList);
+		preferences.getPageView().removeAll(removeList);
+	}
+
+	private void addToReadingList(HttpServletRequest request) {
+		SearchResults results = getSearchResults(request);
+		UserPreferences preferences = getUserPreferences(request);
+		
+		int articles = results.getPageView().size();
+		for (int i = 0; i < articles; i++) {
+			String checked = request.getParameter("selected" + i);
+			if (checked != null) {
+				int articleIndex = Integer.parseInt(checked) + (results.getCurrentPage()-FIRST_PAGE)*results.getArticlesPerPage();
+				
+				preferences.addReadingList(results.getArticles().get(articleIndex));
+			}
+		}
+	}
+}
+

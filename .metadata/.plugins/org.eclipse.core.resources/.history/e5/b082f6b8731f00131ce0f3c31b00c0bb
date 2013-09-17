@@ -1,0 +1,144 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<jsp:useBean id="results" class="edu.unsw.comp9321.assign1.data.model.SearchResults" scope="session"/>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>COMP9321 Assignment 1 - Home</title>
+<style>
+	body {
+		color: #4a4d50;
+	}
+	
+	.container {
+		max-width: 940px;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	.container #header-container {
+		text-align: center;
+	}
+
+	.container #navbar-container {
+		margin: 0 auto;
+		width: 100%;
+		display: table;
+		text-align: center;
+		padding-bottom: 30px;
+	}
+	
+	.container #search-container {
+		text-align: left;
+		font-size: 1.2em;
+		text-align: center;
+	}
+	
+	.navbar { 
+		display: block;
+		text-align: center;
+		height: 4.5em; 
+		background: #4a4d50;
+		border-radius: 10px 10px 10px 10px; 
+	}
+	
+	.navbar ul {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		height: 4.5em;
+	}
+	
+	.navbar ul li {
+		display: inline;
+		padding: 25px 40px 22px 40px;
+	}
+	
+	.navbar ul li a {
+		text-decoration: none;
+		font-size: 2em;
+		line-height: 2em;
+		color: #ffffff;
+	}
+	
+	.navbar ul .active {
+		background: #ffffff;
+	}
+	
+	.navbar ul .active a {
+		color: #4a4d50;
+	}
+	
+	.navbar ul li a:hover {
+		color: #009FDA;
+	}
+	
+	h1 {
+		font-size: 4em;
+		margin: 20px 0 30px 0 ;
+	}
+	
+	h2 {
+		padding: 0;
+		margin: 10px 0 10px 0;
+	}
+	
+	input[type="text"] {
+    	width: 400px;
+    	height: 30px;
+    	margin-bottom: 20px;
+    	text-align: center;
+    	font-size: 1.2em;
+	}
+	
+	input[type="Submit"] {
+    	width: 200px;
+    	height: 50px;
+    	margin-top: 10px;
+    	font-size: 1.5em;
+	}
+	
+</style>
+</head>
+<body>
+ 
+	<div id="search">
+		<form name="searchPublicationForm" action="controller" method="GET">
+			<input type="hidden" name="action" value="search"/>
+			<table>
+			<tr>
+				<td>Author </td>
+				<td><input type="text" name="author" maxlength="10" /></td>
+			</tr>
+			<tr>
+				<td>Article </td>
+				<td><input type="text" name="article" maxlength="30" /></td>
+			</tr>
+			<tr>	
+				<td>Journal</td>
+				<td><input type="text" name="journal" maxlength="30" /></td>
+			</tr>
+			<tr>
+				<c:if test="${results.articlesPerPage == 0}">
+					<td>Number of results at a time</td><td><input type="text" name="numResults" value="10"></td>
+				</c:if>
+				<c:if test="${results.articlesPerPage != 0}">
+					<td>Number of results at a time</td><td><input type="text" name="numResults" value="${results.articlesPerPage}"></td>
+				</c:if>
+			</tr>
+			<tr>
+				<td><input type="submit" name="submitSearch" value="Submit"></td>
+			</tr>
+			</table>
+		</form>
+	</div>
+	<div id="reading-link">
+		<a href="controller?action=showList&source=home">Reading List</a>
+	</div>
+	
+</body>
+</html>

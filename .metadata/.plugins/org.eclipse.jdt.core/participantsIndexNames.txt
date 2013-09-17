@@ -1,0 +1,7 @@
+INDEX VERSION 1.126
+/Users/AlbertWang/Documents/AuctionApplication/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/3821478441.index
+/Amazezon/src
+/Users/AlbertWang/Documents/AuctionApplication/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/2228359735.index
+/Amazezon/src
+/Users/AlbertWang/Documents/AuctionApplication/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/4280890521.index
+/Amazezon/src
