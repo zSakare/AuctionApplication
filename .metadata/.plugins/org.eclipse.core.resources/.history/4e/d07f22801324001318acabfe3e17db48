@@ -1,0 +1,16 @@
+package test.database;
+
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
+import org.junit.Test;
+
+public class DatabaseConnectionTest {
+
+	@Test
+	public void connectToDatabase() throws Exception {
+		// Database test code:
+		InitialContext cxt = new InitialContext();
+		DataSource ds = (DataSource) cxt.lookup("java:/comp/env/jdbc/postgres");
+	}
+}

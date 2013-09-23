@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
+	<section name="WorkbenchPreferenceDialogSettings">
+		<item value="0" key="DIALOG_Y_ORIGIN"/>
+		<item value="293" key="DIALOG_X_ORIGIN"/>
+	</section>
 	<section name="NewWizardAction">
 		<item value="org.eclipse.wst.xml.ui.internal.wizards.NewXMLWizard" key="NewWizardSelectionPage.STORE_SELECTED_ID"/>
 		<list key="NewWizardSelectionPage.STORE_EXPANDED_CATEGORIES_ID">
@@ -10,5 +14,7 @@
 			<item value="org.eclipse.wst.XMLCategory"/>
 			<item value="org.eclipse.ui.Examples"/>
 		</list>
+	</section>
+	<section name="ImportExportAction">
 	</section>
 </section>
