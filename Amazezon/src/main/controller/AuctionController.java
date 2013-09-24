@@ -1,6 +1,9 @@
 package main.controller;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
@@ -43,7 +46,7 @@ public class AuctionController extends HttpServlet {
 			if ( cxt == null ) {
 			   throw new Exception("Uh oh -- no context!");
 			}
-			
+			Connection conn;
 			DataSource ds = (DataSource) cxt.lookup( "java:/comp/env/jdbc/postgres" );
 			
 			if ( ds == null ) {
@@ -52,6 +55,32 @@ public class AuctionController extends HttpServlet {
 	    	
 	    	if (ds != null && cxt != null) {
 	    		System.out.println("FAWK YEAH");
+	    		
+	    		try {
+	                Class.forName("org.postgresql.Driver");
+
+
+
+	            }
+	            catch (java.lang.ClassNotFoundException e) {
+	                java.lang.System.err.print("ClassNotFoundException: Postgres Server JDBC");
+	                java.lang.System.err.println(e.getMessage());
+	                throw new Exception("No JDBC Driver found in Server");
+	            }
+	    		
+	    		try {
+	    			
+	    			conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/AuctionDB","postgres","");
+	    			System.out.println("Connected");
+	    			
+	    		} catch (SQLException E) {
+
+	                java.lang.System.out.println("SQLException: " + E.getMessage());
+	                java.lang.System.out.println("SQLState: " + E.getSQLState());
+	                java.lang.System.out.println("VendorError: " + E.getErrorCode());
+
+	            }
+	    		
 	    	}
     	} catch (Exception e) {
     		System.err.println("Problem establishing connection: " + e);
