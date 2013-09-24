@@ -6,7 +6,7 @@ create table Users (
    password    varchar(50) not null,
    address     varchar(100),
    yearOfBirth int,
-   creditCard  varchar(19),
+   creditCard  varchar(19) not null,
    confirmed   boolean default false,
    primary key (userID)
 )

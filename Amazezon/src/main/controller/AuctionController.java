@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import main.model.UserDAO;
+
 /**
  * Auction Controller:
  * Handles -
@@ -19,9 +21,12 @@ import javax.sql.DataSource;
  * 	3. Bidding - auction.jsp (auction list), bid.jsp (bid form).
  *	4. Admin Functionality - admin.jsp (administration page).
  */
-@WebServlet(name="AuctionController",urlPatterns={"/*"})
+@WebServlet(name="AuctionController",urlPatterns={"/AuctionController","/","/home"})
 public class AuctionController extends HttpServlet {
 	private static final long serialVersionUID = -4203748354523622984L;
+	private static final String REGISTER = "register";
+	private static final String ACTION = "action";
+	
 	final Logger logger = Logger.getLogger(this.getClass().getName());
 	
     /**
@@ -32,6 +37,7 @@ public class AuctionController extends HttpServlet {
     }
     
     public void init() {
+    	// Test code.
     	try {
 			InitialContext cxt = new InitialContext();
 			if ( cxt == null ) {
@@ -63,7 +69,23 @@ public class AuctionController extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		if (REGISTER.equals(request.getParameter(ACTION))) {
+			String username = request.getParameter("username");
+			String firstname = request.getParameter("firstname");
+			String lastname = request.getParameter("lastname");
+			String password = request.getParameter("password");
+			String email = request.getParameter("email");
+			String address = request.getParameter("address");
+			String dob = request.getParameter("dob");
+			String creditCard = request.getParameter("creditCard");
+			
+			if (username.isEmpty() || password.isEmpty() || creditCard.isEmpty() || email.isEmpty()) {
+				System.out.println("A field that cannot be null is missing a value.");
+			} else {
+				UserDAO newUser = new UserDAO(username, password, email, firstname, lastname, address, dob, creditCard);
+				newUser.doInsert();
+			}
+		}
 	}
 }
 
