@@ -6,4 +6,10 @@
 *.ear
 
 .metadata
+.classpath
+.settings/
+.loadpath
+.project
+*.pydevproject
+
 .DS_Store
