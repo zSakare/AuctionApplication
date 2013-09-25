@@ -4,6 +4,7 @@ create table Users (
    lastname    varchar(50),
    username    varchar(50) not null unique,
    password    varchar(50) not null,
+   email       varchar(100) not null,
    address     varchar(100),
    yearOfBirth int,
    creditCard  varchar(19) not null,

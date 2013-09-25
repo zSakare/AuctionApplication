@@ -6,6 +6,7 @@
 *.ear
 
 .metadata
+.metadata/*
 .classpath
 .settings/
 .loadpath

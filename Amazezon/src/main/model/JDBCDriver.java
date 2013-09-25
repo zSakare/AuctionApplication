@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public abstract class JDBCDriver {
 	private static final String DRIVER = "org.postgresql.Driver";
-	private static final String CONNECTION = "jdbc:postgresql://127.0.0.1:5432/AuctionDB";
+	private static final String CONNECTION = "jdbc:postgresql://localhost:5923/AuctionDB";
 	private static final String DB_USER = "auctionadmin";
 	private static final String DB_PASSWORD = "admin";
 	
@@ -28,7 +28,7 @@ public abstract class JDBCDriver {
 		return connection;
 	}
 	
-	public void doInsert() {
+	public void doInsert() throws Exception {
 		// To be filled by sub classes.
 	}
 }

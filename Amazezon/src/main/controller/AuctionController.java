@@ -70,9 +70,9 @@ public class AuctionController extends HttpServlet {
 	    		
 	    		try {
 	    			
-	    			conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/AuctionDB","postgres","");
-	    			System.out.println("Connected");
+	    			conn = DriverManager.getConnection("jdbc:postgresql://localhost:5923/AuctionDB","auctionadmin","admin");
 	    			
+	    			System.out.println("Connected");
 	    		} catch (SQLException E) {
 
 	                java.lang.System.out.println("SQLException: " + E.getMessage());
@@ -112,8 +112,15 @@ public class AuctionController extends HttpServlet {
 				System.out.println("A field that cannot be null is missing a value.");
 			} else {
 				UserDAO newUser = new UserDAO(username, password, email, firstname, lastname, address, dob, creditCard);
-				newUser.doInsert();
+				try {
+					newUser.doInsert();
+				} catch (Exception e) {
+					// TODO: send user to error page.
+					e.printStackTrace();
+				}
 			}
+			
+			response.sendRedirect("index.jsp");
 		}
 	}
 }

@@ -33,15 +33,15 @@ public class UserDAO extends JDBCDriver {
 	}
 	
 	@Override
-	public void doInsert() {
+	public void doInsert() throws Exception {
 		Statement sqlStatement = null;
 		Connection connection = null;
 		
-		//TODO: INCLUDE EMAIL.
+		//TODO: STOP SQL INJECTION LOLOL
 		String sql = "INSERT INTO USERS " +
-				"(firstname,lastname,username,password,address,yearOfBirth,creditCard,confirmed) " +
+				"(firstname,lastname,username,password,email,address,yearOfBirth,creditCard,confirmed) " +
 				"VALUES ('" + firstname + "','" + lastname + "','" + username + "','" + password + "'," +
-						"'" + address + "','" + dob + "','" + creditCard + "','false');";
+						"'" + email + "','" + address + "','" + dob + "','" + creditCard + "','false');";
 		
 		try {
 			connection = getConnection();
@@ -49,7 +49,7 @@ public class UserDAO extends JDBCDriver {
 			
 			sqlStatement.executeUpdate(sql);
 		} catch (SQLException e) {
-			System.err.println("Problem attempting to insert user record. SQLException: " + e);
+			throw new SQLException("Unable to insert user. SQLException: " + e);
 		} finally {
 			try {
 				if (sqlStatement != null) {
