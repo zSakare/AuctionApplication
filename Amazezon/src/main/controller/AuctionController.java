@@ -105,7 +105,9 @@ public class AuctionController extends HttpServlet {
 			String password = request.getParameter("password");
 			String email = request.getParameter("email");
 			String address = request.getParameter("address");
-			String dob = request.getParameter("dob");
+			int dob = Integer.parseInt(request.getParameter("dob"));
+			
+			
 			String creditCard = request.getParameter("creditCard");
 			
 			if (username.isEmpty() || password.isEmpty() || creditCard.isEmpty() || email.isEmpty()) {
