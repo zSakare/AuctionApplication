@@ -7,6 +7,8 @@
 <title>Amazezon - User Registration</title>
 </head>
 <body>
+	<jsp:useBean id="userBean" class="main.model.UserDAO" scope="session" />
+	
 	<div id="register">
 		<form name="userRegistrationForm" action="controller" method="POST">
 			<input type="hidden" name="action" value="register"/>
@@ -29,11 +31,12 @@
 			</tr>
 			<tr>
 				<td>Firstname</td>
-				<td><input type="text" name="firstname" maxlength="50" /></td>
+				<td><input type="text" name="firstName" maxlength="50" /></td>
+				<jsp:setProperty name="userBean" property="firstName" value="daniel" />
 			</tr>
 			<tr>	
 				<td>Lastname</td>
-				<td><input type="text" name="lastname" maxlength="50" /></td>
+				<td><input type="text" name="lastName" maxlength="50" /></td>
 			</tr>
 			<tr>	
 				<td>Address</td>
@@ -53,5 +56,6 @@
 			</table>
 		</form>
 	</div>
+	
 </body>
 </html>

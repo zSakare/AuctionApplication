@@ -100,8 +100,8 @@ public class AuctionController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (REGISTER.equals(request.getParameter(ACTION))) {
 			String username = request.getParameter("username");
-			String firstname = request.getParameter("firstname");
-			String lastname = request.getParameter("lastname");
+			String firstname = request.getParameter("firstName");
+			String lastname = request.getParameter("lastName");
 			String password = request.getParameter("password");
 			String email = request.getParameter("email");
 			String address = request.getParameter("address");
@@ -109,20 +109,28 @@ public class AuctionController extends HttpServlet {
 			
 			
 			String creditCard = request.getParameter("creditCard");
-			
+			UserDAO userBean = null;
 			if (username.isEmpty() || password.isEmpty() || creditCard.isEmpty() || email.isEmpty()) {
 				System.out.println("A field that cannot be null is missing a value.");
 			} else {
-				UserDAO newUser = new UserDAO(username, password, email, firstname, lastname, address, dob, creditCard);
+				
+				//request.getSession().setAttribute("newUser", newUser);
+				userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
+				userBean.setAttributes(username, password, email, firstname, lastname, address, dob, creditCard); //same as what the constructor did before
+				
+				
+				System.out.println("first name: "+ userBean.getFirstName());
+				
 				try {
-					newUser.doInsert();
+					userBean.doInsert();
 				} catch (Exception e) {
 					// TODO: send user to error page.
 					e.printStackTrace();
 				}
 			}
-			
-			response.sendRedirect("index.jsp");
+			//the following is only needed if we are not using a session bean
+			//request.getSession().setAttribute("userBean", userBean); //send the bean through for the next page
+			response.sendRedirect("admin.jsp");
 		}
 	}
 }
