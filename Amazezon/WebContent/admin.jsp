@@ -12,7 +12,7 @@
 
 
 	Hello <c:out value="${userBean.firstName}" />
-
+	<a href=http://localhost:8080/Amazezon/new-auction.jsp>Create a New Auction</a>
 
 
 </body>
