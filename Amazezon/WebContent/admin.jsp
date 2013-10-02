@@ -11,7 +11,7 @@
 <body>
 
 
-	<c:out value="${userBean.firstName}" />
+	Hello <c:out value="${userBean.firstName}" />
 
 
 

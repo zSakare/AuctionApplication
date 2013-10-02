@@ -28,6 +28,7 @@ import main.model.UserDAO;
 public class AuctionController extends HttpServlet {
 	private static final long serialVersionUID = -4203748354523622984L;
 	private static final String REGISTER = "register";
+	private static final String LOGIN = "login";
 	private static final String ACTION = "action";
 	
 	final Logger logger = Logger.getLogger(this.getClass().getName());
@@ -131,6 +132,20 @@ public class AuctionController extends HttpServlet {
 			//the following is only needed if we are not using a session bean
 			//request.getSession().setAttribute("userBean", userBean); //send the bean through for the next page
 			response.sendRedirect("admin.jsp");
+		} else if (LOGIN.equals(request.getParameter(ACTION))) {
+			
+			String username = request.getParameter("username");
+			String password = request.getParameter("password");
+			UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
+			
+			
+			if (userBean.login(username, password)) {
+				response.sendRedirect("admin.jsp");
+			} else {
+				response.sendRedirect("fail.jsp");
+			}
+			
+
 		}
 	}
 }

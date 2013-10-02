@@ -3,8 +3,8 @@ package main.model;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-
 
 public class UserDAO extends JDBCDriver implements Serializable {
 	/**
@@ -20,17 +20,24 @@ public class UserDAO extends JDBCDriver implements Serializable {
 	private int dob;
 	private String creditCard;
 	
+	//positions of columns in database
+	private static final int USERID = 1;
+	private static final int FIRSTNAME = 2;
+	private static final int LASTNAME = 3;
+	private static final int USERNAME = 4;
+	private static final int PASSWORD = 5;
+	private static final int EMAIL = 6;
+	private static final int ADDRESS = 7;
+	private static final int DOB = 8;
+	private static final int CREDITCARD = 9;
+	private static final int CONFIRMED = 10;
+
 	public UserDAO() {
-		
+
 	}
-	
-	public void setAttributes(String username, 
-			String password, 
-			String email, 
-			String firstName,
-			String lastName, 
-			String address,
-			int dob, 
+
+	public void setAttributes(String username, String password, String email,
+			String firstName, String lastName, String address, int dob,
 			String creditCard) {
 		this.username = username;
 		this.password = password;
@@ -40,9 +47,9 @@ public class UserDAO extends JDBCDriver implements Serializable {
 		this.address = address;
 		this.dob = dob;
 		this.creditCard = creditCard;
-		
+
 	}
-	
+
 	public String getUsername() {
 		return username;
 	}
@@ -109,33 +116,31 @@ public class UserDAO extends JDBCDriver implements Serializable {
 
 	@Override
 	public void doInsert() throws Exception {
-		
+
 		Connection conn = null;
-		
-		//TODO: STOP SQL INJECTION LOLOL
+
+		// TODO: STOP SQL INJECTION LOLOL
 		String sql = "INSERT INTO USERS (firstname,lastname,username,password,email,address,yearOfBirth,creditCard,confirmed) VALUES (?,?,?,?,?,?,?,?,?);";
-		
+
 		PreparedStatement pst = null;
 		try {
 			conn = getConnection();
-			
-			
+
 			pst = conn.prepareStatement(sql);
-			
-            //ResultSet rs = st.executeQuery("SELECT VERSION()");
-			
-			
-            pst.setString(1, firstName);
-            pst.setString(2, lastName);
-            pst.setString(3, username);
-            pst.setString(4, password);
-            pst.setString(5, email);
-            pst.setString(6, address);
-            pst.setInt(7, dob);
-            pst.setString(8, creditCard);
-            
-            pst.setBoolean(9, false);
-            pst.executeUpdate();
+
+			// ResultSet rs = st.executeQuery("SELECT VERSION()");
+
+			pst.setString(1, firstName);
+			pst.setString(2, lastName);
+			pst.setString(3, username);
+			pst.setString(4, password);
+			pst.setString(5, email);
+			pst.setString(6, address);
+			pst.setInt(7, dob);
+			pst.setString(8, creditCard);
+
+			pst.setBoolean(9, false);
+			pst.executeUpdate();
 		} catch (SQLException e) {
 			throw new SQLException("Unable to insert user. SQLException: " + e);
 		} finally {
@@ -143,13 +148,83 @@ public class UserDAO extends JDBCDriver implements Serializable {
 				if (pst != null) {
 					pst.close();
 				}
-				
+
 				if (conn != null) {
 					conn.close();
 				}
 			} catch (Exception e) {
-				System.out.println(e.getStackTrace());
+				e.printStackTrace();
 			}
 		}
 	}
+
+	public boolean login(String username, String password) {
+		
+		boolean loggedIn = false;
+		Connection conn = null;
+
+		ResultSet rs = null;
+		String sql = "SELECT * FROM USERS WHERE username=?"; //get the row with the username on it
+
+		PreparedStatement pst = null;
+		try {
+			conn = getConnection();
+
+			pst = conn.prepareStatement(sql);
+			pst.setString(1, username);
+			
+
+			rs = pst.executeQuery();
+			// extract data from the ResultSet
+			// TODO: check if there are multiple results for a username
+			if (rs == null) {
+				// redirect to incorrect password page
+			}
+			String correctPass = null;
+			String firstNameDB = null;
+			String lastNameDB = null;
+			String emailDB = null;
+			String addressDB = null;
+			int dobDB = 0;
+			String creditCardDB = null;
+			//this loop should happen once
+			while (rs.next()) { //retrieving user information from db 
+				correctPass = rs.getString(PASSWORD);
+				firstNameDB = rs.getString(FIRSTNAME);
+				lastNameDB = rs.getString(LASTNAME);
+				emailDB = rs.getString(EMAIL);
+				addressDB = rs.getString(ADDRESS);
+				dobDB = rs.getInt(DOB);
+				creditCardDB = rs.getString(CREDITCARD);
+				
+			}
+			if (correctPass.equals(password)) { //store the information about the user for the db into this object
+				loggedIn = true;
+				this.username=username;
+				this.password=password;
+				this.firstName=firstNameDB;
+				this.lastName=lastNameDB;
+				this.email = emailDB;
+				this.address = addressDB;
+				this.dob = dobDB;
+				this.creditCard = creditCardDB;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return loggedIn;
+	}
+
 }

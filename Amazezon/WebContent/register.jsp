@@ -32,7 +32,7 @@
 			<tr>
 				<td>Firstname</td>
 				<td><input type="text" name="firstName" maxlength="50" /></td>
-				<jsp:setProperty name="userBean" property="firstName" value="daniel" />
+				
 			</tr>
 			<tr>	
 				<td>Lastname</td>

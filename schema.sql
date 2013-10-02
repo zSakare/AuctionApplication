@@ -10,4 +10,19 @@ create table Users (
    creditCard  varchar(19) not null,
    confirmed   boolean default false,
    primary key (userID)
-)
+);
+
+create table Auction (
+   auctionID         serial not null,
+   itemName          varchar(50),
+   title             varchar(50),
+   category          text,
+   picture           text,
+   description       text,
+   postage           text,
+   reservePrice      float,
+   biddingStartPrice float,
+   biddingIncrement  float,
+   endTime           int,
+   primary key (auctionID)
+);
