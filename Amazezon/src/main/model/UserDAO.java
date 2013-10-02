@@ -119,7 +119,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 
 		Connection conn = null;
 
-		// TODO: STOP SQL INJECTION LOLOL
+
 		String sql = "INSERT INTO USERS (firstname,lastname,username,password,email,address,yearOfBirth,creditCard,confirmed) VALUES (?,?,?,?,?,?,?,?,?);";
 
 		PreparedStatement pst = null;

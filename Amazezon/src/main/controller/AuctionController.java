@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import main.model.AuctionDAO;
 import main.model.UserDAO;
 
 /**
@@ -30,6 +31,7 @@ public class AuctionController extends HttpServlet {
 	private static final String REGISTER = "register";
 	private static final String LOGIN = "login";
 	private static final String ACTION = "action";
+	private static final String AUCTION = "createAuction";
 	
 	final Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -144,8 +146,27 @@ public class AuctionController extends HttpServlet {
 			} else {
 				response.sendRedirect("fail.jsp");
 			}
-			
-
+		} else if (AUCTION.equals(request.getParameter(ACTION))) {
+			UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
+			String username = userBean.getUsername();
+			String itemName = request.getParameter("itemName");
+			String title = request.getParameter("title");
+			String category = request.getParameter("category");
+			String picture = request.getParameter("picture");
+			String description = request.getParameter("description");
+			String postageDetails = request.getParameter("postageDetails");
+			Float reservePrice = Float.parseFloat(request.getParameter("reservePrice"));
+			Float biddingStartPrice = Float.parseFloat(request.getParameter("biddingStartPrice"));
+			Float biddingIncrement = Float.parseFloat(request.getParameter("biddingIncrements"));
+			int endTime = Integer.parseInt(request.getParameter("endTime"));
+			AuctionDAO auctionDAO = new AuctionDAO();
+			auctionDAO.setAttributes(username, itemName, title, category, picture, description, postageDetails, reservePrice, biddingStartPrice, biddingIncrement, endTime);
+			try {
+				auctionDAO.doInsert();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 }

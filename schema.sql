@@ -12,17 +12,20 @@ create table Users (
    primary key (userID)
 );
 
-create table Auction (
+create table Auctions (
    auctionID         serial not null,
-   itemName          varchar(50),
-   title             varchar(50),
+   creator           integer references Users(userID),
+   itemName          varchar(50) not null,
+   title             varchar(50) not null,
    category          text,
    picture           text,
    description       text,
-   postage           text,
-   reservePrice      float,
-   biddingStartPrice float,
-   biddingIncrement  float,
+   postage           text not null,
+   reservePrice      float not null,
+   biddingStartPrice float not null,
+   biddingIncrement  float not null,
    endTime           int,
    primary key (auctionID)
 );
+
+
