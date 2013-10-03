@@ -122,6 +122,7 @@ public class AuctionController extends HttpServlet {
 			
 			if (form.getUsername().isEmpty() || form.getPassword().isEmpty() || form.getCreditCard().isEmpty() || form.getEmail().isEmpty()) {
 				System.out.println("A field that cannot be null is missing a value.");
+				request.getSession().setAttribute("form", form);
 				response.sendRedirect("register.jsp");
 			} else if (!RegistrationFormValidator.validate(form).isEmpty()) {
 				// There are errors, put them in the register page and resend data.
