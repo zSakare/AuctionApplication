@@ -28,4 +28,16 @@ create table Auctions (
    primary key (auctionID)
 );
 
+create table Bids (
+   bidID       serial not null,
+   auction     integer references Auctions(auctionID),
+   bidTime     bigint,
+   bidPrice    float not null,
+   primary key (bidID)
+);
 
+create table User_has_Bids (
+   bidder   integer references Users(userID),
+   bid      integer references Bids(bidID),
+   primary key (bidder, bid)
+);

@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import main.form.RegistrationForm;
+import main.form.validator.RegistrationFormValidator;
 import main.model.AuctionDAO;
 import main.model.UserDAO;
 
@@ -102,25 +104,42 @@ public class AuctionController extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (REGISTER.equals(request.getParameter(ACTION))) {
-			String username = request.getParameter("username");
-			String firstname = request.getParameter("firstName");
-			String lastname = request.getParameter("lastName");
-			String password = request.getParameter("password");
-			String email = request.getParameter("email");
-			String address = request.getParameter("address");
-			int dob = Integer.parseInt(request.getParameter("dob"));
+			RegistrationForm form = (RegistrationForm) request.getAttribute("form");
 			
+			if (form == null) {
+				form = new RegistrationForm();
+			}
 			
-			String creditCard = request.getParameter("creditCard");
+			form.setUsername(request.getParameter("username"));
+			form.setFirstname(request.getParameter("firstName"));
+			form.setLastname(request.getParameter("lastName"));
+			form.setPassword(request.getParameter("password"));
+			form.setPasswordConfirm(request.getParameter("passwordConfirm"));
+			form.setEmail(request.getParameter("email"));
+			form.setAddress(request.getParameter("address"));
+			form.setDob(Integer.parseInt(request.getParameter("dob")));
+			form.setCreditCard(request.getParameter("creditCard"));
+			
 			UserDAO userBean = null;
-			if (username.isEmpty() || password.isEmpty() || creditCard.isEmpty() || email.isEmpty()) {
+			if (form.getUsername().isEmpty() || form.getPassword().isEmpty() || form.getCreditCard().isEmpty() || form.getEmail().isEmpty()) {
 				System.out.println("A field that cannot be null is missing a value.");
+			} else if (!RegistrationFormValidator.validate(form).isEmpty()) {
+				// There are errors, put them in the register page and resend data.
+				request.getSession().setAttribute("form", form);
+				response.sendRedirect("register.jsp");
+				return;
 			} else {
 				
 				//request.getSession().setAttribute("newUser", newUser);
 				userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
-				userBean.setAttributes(username, password, email, firstname, lastname, address, dob, creditCard); //same as what the constructor did before
-				
+				userBean.setAttributes(form.getUsername(), 
+										form.getPassword(), 
+										form.getEmail(), 
+										form.getFirstname(), 
+										form.getLastname(), 
+										form.getAddress(), 
+										form.getDob(), 
+										form.getCreditCard()); //same as what the constructor did before
 				
 				System.out.println("first name: "+ userBean.getFirstName());
 				
