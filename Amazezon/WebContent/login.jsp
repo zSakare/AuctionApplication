@@ -9,7 +9,7 @@
 <title>Amazezon - User Login</title>
 </head>
 <body>
-	<jsp:useBean id="userBean" class="main.model.UserDAO" scope="session" />
+	<jsp:useBean id="userBean" class="main.model.dao.UserDAO" scope="session" />
 	
 	<c:if test="${loginStatus == 'failed'}">
 		<c:out value="Login failed - try again" />
