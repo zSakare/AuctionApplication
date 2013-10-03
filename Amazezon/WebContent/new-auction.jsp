@@ -9,7 +9,7 @@
 <body>
 	
 	
-	<div id="register">
+	<div id="newAuction">
 		<form name="createAuctionForm" action="controller" method="POST">
 			<input type="hidden" name="action" value="createAuction"/>
 			<table>

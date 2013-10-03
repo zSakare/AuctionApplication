@@ -3,7 +3,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<jsp:useBean id="form" class="main.form.SearchForm" scope="session"/>
+<jsp:useBean id="searchForm" class="main.form.SearchForm" scope="page"/>
 <jsp:useBean id="auctionList" class="main.model.data.AuctionList" scope="session"/>
 <jsp:useBean id="auction" class="main.model.data.Auction" scope="session"/>
 <html>

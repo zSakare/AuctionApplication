@@ -104,7 +104,7 @@ public class AuctionController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (AUCTION_SEARCH.equals(request.getParameter(ACTION))) {
-			SearchForm form = (SearchForm) request.getSession().getAttribute(FORM);
+			SearchForm form = (SearchForm) request.getSession().getAttribute("searchForm");
 			
 			if (form == null) {
 				form = new SearchForm();
@@ -119,7 +119,7 @@ public class AuctionController extends HttpServlet {
 			auctions.setAuctions(auctionsFound);
 			
 			request.getSession().setAttribute("auctionList", auctions);
-			request.getSession().setAttribute(FORM, form);
+			request.getSession().setAttribute("searchForm", form);
 			response.sendRedirect("auction.jsp");
 		}
 	}
@@ -157,6 +157,7 @@ public class AuctionController extends HttpServlet {
 				
 				try {
 					userBean.doInsert();
+					userBean.login(form.getUsername(), form.getPassword());
 					
 					response.sendRedirect("admin.jsp");
 				} catch (Exception e) {

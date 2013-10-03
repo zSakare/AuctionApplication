@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Amazezon - Admin</title>
 </head>
 <body>
 
@@ -16,7 +16,7 @@
 			<a href=http://localhost:8080/Amazezon/new-auction.jsp>Create a New Auction</a>
 		</c:when>
 		<c:otherwise>
-			Sorry you're not logged in!
+			<p>Sorry you're not logged in!</p>
 		</c:otherwise>
 		
 	</c:choose>
