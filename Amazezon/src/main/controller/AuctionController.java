@@ -16,8 +16,8 @@ import javax.sql.DataSource;
 
 import main.form.RegistrationForm;
 import main.form.validator.RegistrationFormValidator;
-import main.model.AuctionDAO;
-import main.model.UserDAO;
+import main.model.dao.AuctionDAO;
+import main.model.dao.UserDAO;
 
 /**
  * Auction Controller:
