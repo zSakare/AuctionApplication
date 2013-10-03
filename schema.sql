@@ -24,7 +24,7 @@ create table Auctions (
    reservePrice      float not null,
    biddingStartPrice float not null,
    biddingIncrement  float not null,
-   endTime           int,
+   endTime           bigint,
    primary key (auctionID)
 );
 
