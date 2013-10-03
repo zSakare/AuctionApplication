@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+<%@ page isELIgnored ="false" %> 
+<%@ taglib uri='http://java.sun.com/jsp/jstl/core' prefix='c'%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -8,6 +10,19 @@
 </head>
 <body>
 	<jsp:useBean id="userBean" class="main.model.UserDAO" scope="session" />
+	<c:choose>
+		<c:when test="${userBean.errorInForm}">
+			<c:out value="A field that cannot be empty is missing a value." />
+		</c:when>
+		<c:otherwise>
+			<%
+				if (!userBean.getErrorInForm()) {
+					userBean.logOut();	
+				}
+			%>	
+		</c:otherwise>
+	</c:choose>
+	
 	
 	<div id="register">
 		<form name="userRegistrationForm" action="controller" method="POST">
@@ -15,7 +30,7 @@
 			<table>
 			<tr>
 				<td>Username*</td>
-				<td><input type="text" name="username" maxlength="50" /></td>
+				<td><input type="text" name="username" maxlength="50" value="${userBean.username}"/></td>
 			</tr>
 			<tr>	
 				<td>Password*</td>
@@ -27,20 +42,20 @@
 			</tr>
 			<tr>
 				<td>Email*</td>
-				<td><input type="text" name="email" maxlength="100" /></td>
+				<td><input type="text" name="email" maxlength="100" value="${userBean.email}"/></td>
 			</tr>
 			<tr>
 				<td>Firstname</td>
-				<td><input type="text" name="firstName" maxlength="50" /></td>
+				<td><input type="text" name="firstName" maxlength="50" value="${userBean.firstName}"/></td>
 				
 			</tr>
 			<tr>	
 				<td>Lastname</td>
-				<td><input type="text" name="lastName" maxlength="50" /></td>
+				<td><input type="text" name="lastName" maxlength="50" value="${userBean.lastName}"/></td>
 			</tr>
 			<tr>	
 				<td>Address</td>
-				<td><input type="text" name="address" maxlength="100" /></td>
+				<td><input type="text" name="address" maxlength="100" value="${userBean.address}"/></td>
 			</tr>
 			<tr>	
 				<td>Year of Birth</td>
@@ -56,6 +71,7 @@
 			</table>
 		</form>
 	</div>
+
 	
 </body>
 </html>

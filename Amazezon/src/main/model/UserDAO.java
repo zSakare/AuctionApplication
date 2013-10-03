@@ -19,6 +19,8 @@ public class UserDAO extends JDBCDriver implements Serializable {
 	private String address;
 	private int dob;
 	private String creditCard;
+	private boolean loggedIn;
+	private boolean errorInForm;
 	
 	//positions of columns in database
 	private static final int USERID = 1;
@@ -33,7 +35,8 @@ public class UserDAO extends JDBCDriver implements Serializable {
 	private static final int CONFIRMED = 10;
 
 	public UserDAO() {
-
+		this.loggedIn = false;
+		this.errorInForm = false;
 	}
 
 	public void setAttributes(String username, String password, String email,
@@ -47,38 +50,56 @@ public class UserDAO extends JDBCDriver implements Serializable {
 		this.address = address;
 		this.dob = dob;
 		this.creditCard = creditCard;
+		this.loggedIn = false;
+		this.errorInForm = false;
 
 	}
 
 	public String getUsername() {
+		
 		return username;
 	}
 
+	public boolean getErrorInForm() {
+		return this.errorInForm;
+	}
+	
+	public void setErrorInForm(boolean errorInForm) {
+		this.errorInForm = errorInForm;
+	}
+	
 	public String getPassword() {
+		
 		return password;
 	}
 
 	public String getEmail() {
+		
 		return email;
 	}
 
 	public String getFirstName() {
+		
 		return firstName;
 	}
 
 	public String getLastName() {
+		
 		return lastName;
 	}
 
 	public String getAddress() {
+		
 		return address;
 	}
 
 	public int getDob() {
+		
 		return dob;
 	}
 
 	public String getCreditCard() {
+		
 		return creditCard;
 	}
 
@@ -141,6 +162,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 
 			pst.setBoolean(9, false);
 			pst.executeUpdate();
+			this.errorInForm = false;
 		} catch (SQLException e) {
 			throw new SQLException("Unable to insert user. SQLException: " + e);
 		} finally {
@@ -160,7 +182,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 
 	public boolean login(String username, String password) {
 		
-		boolean loggedIn = false;
+		this.loggedIn = false;
 		Connection conn = null;
 
 		ResultSet rs = null;
@@ -179,36 +201,40 @@ public class UserDAO extends JDBCDriver implements Serializable {
 			// TODO: check if there are multiple results for a username
 			if (rs == null) {
 				// redirect to incorrect password page
+			} else {
+				String correctPass = null;
+				String firstNameDB = null;
+				String lastNameDB = null;
+				String emailDB = null;
+				String addressDB = null;
+				int dobDB = 0;
+				String creditCardDB = null;
+				//this loop should happen once
+				while (rs.next()) { //retrieving user information from db 
+					correctPass = rs.getString(PASSWORD);
+					firstNameDB = rs.getString(FIRSTNAME);
+					lastNameDB = rs.getString(LASTNAME);
+					emailDB = rs.getString(EMAIL);
+					addressDB = rs.getString(ADDRESS);
+					dobDB = rs.getInt(DOB);
+					creditCardDB = rs.getString(CREDITCARD);
+					
+				}
+				if (correctPass != null && correctPass.equals(password)) { //store the information about the user for the db into this object
+					
+					this.loggedIn = true;
+					this.errorInForm = false;
+					this.username=username;
+					this.password=password;
+					this.firstName=firstNameDB;
+					this.lastName=lastNameDB;
+					this.email = emailDB;
+					this.address = addressDB;
+					this.dob = dobDB;
+					this.creditCard = creditCardDB;
+				}
 			}
-			String correctPass = null;
-			String firstNameDB = null;
-			String lastNameDB = null;
-			String emailDB = null;
-			String addressDB = null;
-			int dobDB = 0;
-			String creditCardDB = null;
-			//this loop should happen once
-			while (rs.next()) { //retrieving user information from db 
-				correctPass = rs.getString(PASSWORD);
-				firstNameDB = rs.getString(FIRSTNAME);
-				lastNameDB = rs.getString(LASTNAME);
-				emailDB = rs.getString(EMAIL);
-				addressDB = rs.getString(ADDRESS);
-				dobDB = rs.getInt(DOB);
-				creditCardDB = rs.getString(CREDITCARD);
-				
-			}
-			if (correctPass.equals(password)) { //store the information about the user for the db into this object
-				loggedIn = true;
-				this.username=username;
-				this.password=password;
-				this.firstName=firstNameDB;
-				this.lastName=lastNameDB;
-				this.email = emailDB;
-				this.address = addressDB;
-				this.dob = dobDB;
-				this.creditCard = creditCardDB;
-			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -224,7 +250,31 @@ public class UserDAO extends JDBCDriver implements Serializable {
 				e.printStackTrace();
 			}
 		}
-		return loggedIn;
+		return this.loggedIn;
+	}
+	
+	
+	public void logOut() {
+		this.username = "";
+		this.password = "";
+		this.email = "";
+		this.firstName = "";
+		this.lastName = "";
+		this.address = "";
+		this.dob = -1;
+		this.creditCard = "";
+		this.loggedIn = false;
+		this.errorInForm = false;
+	}
+	
+	//the following 2 functions are only here for the purpose of the userBean (easier to say userBean.isLoggedIn)
+	public boolean getLoggedIn() {
+		return this.loggedIn;
+	}
+	
+	public void setLoggedIn(boolean loggedIn) {
+		this.loggedIn = loggedIn;
+		
 	}
 
 }
