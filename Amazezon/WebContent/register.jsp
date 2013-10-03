@@ -24,7 +24,6 @@
 		</c:otherwise>
 	</c:choose>
 	
-	
 	<div id="register">
 		<form name="userRegistrationForm" action="controller" method="POST">
 			<input type="hidden" name="action" value="register"/>

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
@@ -15,9 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import main.form.RegistrationForm;
+import main.form.SearchForm;
 import main.form.validator.RegistrationFormValidator;
 import main.model.dao.AuctionDAO;
 import main.model.dao.UserDAO;
+import main.model.data.Auction;
+import main.model.data.AuctionList;
 
 /**
  * Auction Controller:
@@ -29,6 +34,8 @@ import main.model.dao.UserDAO;
  */
 @WebServlet(name="AuctionController",urlPatterns={"/AuctionController","/","/home"})
 public class AuctionController extends HttpServlet {
+	private static final String AUCTION_SEARCH = "auctionSearch";
+	private static final String FORM = "form";
 	private static final long serialVersionUID = -4203748354523622984L;
 	private static final String REGISTER = "register";
 	private static final String LOGIN = "login";
@@ -96,6 +103,25 @@ public class AuctionController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (AUCTION_SEARCH.equals(request.getParameter(ACTION))) {
+			SearchForm form = (SearchForm) request.getSession().getAttribute(FORM);
+			
+			if (form == null) {
+				form = new SearchForm();
+			}
+			
+			form.setItemName(request.getParameter("title"));
+			form.setCategory(request.getParameter("category"));
+			
+			List<Auction> auctionsFound = searchForAuctions(form.getItemName(), form.getCategory());
+			AuctionList auctions = new AuctionList(); 
+			
+			auctions.setAuctions(auctionsFound);
+			
+			request.getSession().setAttribute("auctionList", auctions);
+			request.getSession().setAttribute(FORM, form);
+			response.sendRedirect("auction.jsp");
+		}
 	}
 
 	/**
@@ -103,29 +129,15 @@ public class AuctionController extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (REGISTER.equals(request.getParameter(ACTION))) {
-			RegistrationForm form = (RegistrationForm) request.getAttribute("form");
-			
-			if (form == null) {
-				form = new RegistrationForm();
-			}
-			
-			form.setUsername(request.getParameter("username"));
-			form.setFirstname(request.getParameter("firstName"));
-			form.setLastname(request.getParameter("lastName"));
-			form.setPassword(request.getParameter("password"));
-			form.setPasswordConfirm(request.getParameter("passwordConfirm"));
-			form.setEmail(request.getParameter("email"));
-			form.setAddress(request.getParameter("address"));
-			form.setDob(Integer.parseInt(request.getParameter("dob")));
-			form.setCreditCard(request.getParameter("creditCard"));
+			RegistrationForm form = setRegistrationForm(request);
 			
 			if (form.getUsername().isEmpty() || form.getPassword().isEmpty() || form.getCreditCard().isEmpty() || form.getEmail().isEmpty()) {
 				System.out.println("A field that cannot be null is missing a value.");
-				request.getSession().setAttribute("form", form);
+				request.getSession().setAttribute(FORM, form);
 				response.sendRedirect("register.jsp");
 			} else if (!RegistrationFormValidator.validate(form).isEmpty()) {
 				// There are errors, put them in the register page and resend data.
-				request.getSession().setAttribute("form", form);
+				request.getSession().setAttribute(FORM, form);
 				response.sendRedirect("register.jsp");
 				return;
 			} else {
@@ -192,6 +204,31 @@ public class AuctionController extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private RegistrationForm setRegistrationForm(HttpServletRequest request) {
+		RegistrationForm form = (RegistrationForm) request.getSession().getAttribute(FORM);
+		
+		if (form == null) {
+			form = new RegistrationForm();
+		}
+		
+		form.setUsername(request.getParameter("username"));
+		form.setFirstname(request.getParameter("firstName"));
+		form.setLastname(request.getParameter("lastName"));
+		form.setPassword(request.getParameter("password"));
+		form.setPasswordConfirm(request.getParameter("passwordConfirm"));
+		form.setEmail(request.getParameter("email"));
+		form.setAddress(request.getParameter("address"));
+		form.setDob(Integer.parseInt(request.getParameter("dob")));
+		form.setCreditCard(request.getParameter("creditCard"));
+		return form;
+	}
+	
+	private List<Auction> searchForAuctions(String itemName, String category) {
+		AuctionDAO auctionDAO = new AuctionDAO();
+		
+		return auctionDAO.selectWith(itemName, category);
 	}
 }
 

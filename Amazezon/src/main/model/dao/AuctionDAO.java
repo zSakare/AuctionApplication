@@ -2,11 +2,15 @@ package main.model.dao;
 
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import main.model.data.Auction;
+import main.model.data.User;
 
 public class AuctionDAO extends JDBCDriver implements Serializable {
 	/**
@@ -221,6 +225,87 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 			}
 		}
 	
+	}
+
+	public List<Auction> selectWith(String itemName, String category) {
+		List<Auction> auctionsFound = new ArrayList<Auction>();
+		
+		Connection conn = null;
+
+		ResultSet rs = null;
+
+		String sql = "SELECT auctionid, userid, itemname, title, category, " +
+				"picture, description, postage, reserveprice, biddingstartprice, " +
+				"biddingincrement, endtime, firstname, lastname, username, password, " +
+				"email, address, yearofbirth, creditcard " +
+				"FROM Auctions JOIN Users ON Users.userID=Auctions.creator " +
+				"WHERE itemName SIMILAR TO ? and category SIMILAR TO ?"; //get the row with the username on it
+
+		if (itemName.isEmpty()) {
+			itemName = "%";
+		}
+		
+		if (category.isEmpty()) {
+			category = "%";
+		}
+		
+		PreparedStatement pst = null;
+		try {
+			conn = getConnection();
+
+			pst = conn.prepareStatement(sql);
+			pst.setString(1, itemName);
+			pst.setString(2, category);
+
+			rs = pst.executeQuery();
+			
+			// extract data from the ResultSet
+			// Convert to auction list.
+			while (rs.next()) { 
+				Auction auction = new Auction();
+				
+				User owner = new User();
+				owner.setUserID(rs.getInt("userid"));
+				owner.setUsername(rs.getString("username"));
+				owner.setFirstname(rs.getString("firstname"));
+				owner.setLastname(rs.getString("lastname"));
+				owner.setEmail(rs.getString("email"));
+				owner.setDob(rs.getInt("yearofbirth"));
+				owner.setCreditCard(rs.getString("creditcard"));
+				owner.setAddress(rs.getString("address"));
+				
+				auction.setAuctionID(rs.getInt("auctionid"));
+				auction.setOwner(owner);
+				auction.setItemName(rs.getString("itemname"));
+				auction.setTitle(rs.getString("title"));
+				auction.setCategory(rs.getString("category"));
+//				auction.setPicture(rs.getBytes("picture")); TODO: Add when pictures can be uploaded
+				auction.setDescription(rs.getString("description"));
+				auction.setPostageDetails(rs.getString("postage"));
+				auction.setReservePrice(rs.getFloat("reserveprice"));
+				auction.setStartingPrice(rs.getFloat("biddingstartprice"));
+				auction.setBidIncrements(rs.getFloat("biddingincrement"));
+				auction.setClosingTime(new Date(rs.getLong("endtime")));
+				
+				auctionsFound.add(auction);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return auctionsFound;
 	}
 	
 }

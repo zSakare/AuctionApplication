@@ -10,6 +10,7 @@ public class Auction {
 	private int auctionID;
 	private User owner;
 	private String itemName;
+	private String title;
 	private byte[] picture;
 	private String description;
 	private String postageDetails;
@@ -18,6 +19,7 @@ public class Auction {
 	private float bidIncrements;
 	private Date closingTime;
 	private List<Bid> bids;
+	private String category;
 	
 	// Getters and setters:
 	public int getAuctionID() {
@@ -85,5 +87,17 @@ public class Auction {
 	}
 	public void setBids(List<Bid> bids) {
 		this.bids = bids;
+	}
+	public String getTitle() {
+		return this.title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
 	}
 }
