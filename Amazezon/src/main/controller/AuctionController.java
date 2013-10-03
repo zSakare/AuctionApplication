@@ -120,9 +120,9 @@ public class AuctionController extends HttpServlet {
 			form.setDob(Integer.parseInt(request.getParameter("dob")));
 			form.setCreditCard(request.getParameter("creditCard"));
 			
-			UserDAO userBean = null;
 			if (form.getUsername().isEmpty() || form.getPassword().isEmpty() || form.getCreditCard().isEmpty() || form.getEmail().isEmpty()) {
 				System.out.println("A field that cannot be null is missing a value.");
+				response.sendRedirect("register.jsp");
 			} else if (!RegistrationFormValidator.validate(form).isEmpty()) {
 				// There are errors, put them in the register page and resend data.
 				request.getSession().setAttribute("form", form);
@@ -131,7 +131,7 @@ public class AuctionController extends HttpServlet {
 			} else {
 				
 				//request.getSession().setAttribute("newUser", newUser);
-				userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
+				UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
 				userBean.setAttributes(form.getUsername(), 
 										form.getPassword(), 
 										form.getEmail(), 
@@ -145,25 +145,30 @@ public class AuctionController extends HttpServlet {
 				
 				try {
 					userBean.doInsert();
+					
+					response.sendRedirect("admin.jsp");
 				} catch (Exception e) {
 					// TODO: send user to error page.
 					e.printStackTrace();
+					response.sendRedirect("error.jsp");
 				}
+				
 			}
 			//the following is only needed if we are not using a session bean
 			//request.getSession().setAttribute("userBean", userBean); //send the bean through for the next page
-			response.sendRedirect("admin.jsp");
+			
 		} else if (LOGIN.equals(request.getParameter(ACTION))) {
 			
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
 			UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
 			
-			
+			System.out.println("loginstatus is: "+request.getSession().getAttribute("loginStatus"));
 			if (userBean.login(username, password)) {
 				response.sendRedirect("admin.jsp");
 			} else {
-				response.sendRedirect("fail.jsp");
+				request.getSession().setAttribute("loginStatus","failed");
+				response.sendRedirect("login.jsp");
 			}
 		} else if (AUCTION.equals(request.getParameter(ACTION))) {
 			UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created

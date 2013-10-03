@@ -10,9 +10,17 @@
 </head>
 <body>
 
-
-	Hello <c:out value="${userBean.firstName}" />
-	<a href=http://localhost:8080/Amazezon/new-auction.jsp>Create a New Auction</a>
+	<c:choose>
+		<c:when test="${userBean.loggedIn}">
+			Hello <c:out value="${userBean.firstName}" />
+			<a href=http://localhost:8080/Amazezon/new-auction.jsp>Create a New Auction</a>
+		</c:when>
+		<c:otherwise>
+			Sorry you're not logged in!
+		</c:otherwise>
+		
+	</c:choose>
+	
 
 
 </body>
