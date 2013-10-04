@@ -12,6 +12,7 @@
 <title>Amazezon - Admin</title>
 </head>
 <body>
+	<jsp:useBean id="userBean" class="main.model.dao.UserDAO" scope="session" />
 	<p><c:out value="${userBean.messages}" /></p>
 	<jsp:setProperty name="userBean" property="messages" value="" />
 	<c:choose>
