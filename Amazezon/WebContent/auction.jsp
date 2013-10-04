@@ -9,7 +9,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Amazezon - Auctions</title>
 </head>
 <body>
 	<div id="search">
@@ -25,7 +25,7 @@
 				<td><input type="text" name="category" maxlength="50" value="${searchForm.category}"/></td>
 			</tr>
 			<tr>
-				<td><input type="submit" name="submitSearch" value="auctionSearch"></td>
+				<td><input type="submit" name="submitSearch" value="Search"></td>
 			</tr>
 			</table>
 		</form>

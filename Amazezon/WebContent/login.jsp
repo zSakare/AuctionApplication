@@ -32,7 +32,7 @@
 			</tr>
 			<tr>	
 				<td>Password</td>
-				<td><input type="text" name="password" maxlength="50" /></td>
+				<td><input type="password" name="password" maxlength="50" /></td>
 			</tr>
 			<tr>
 				<td><input type="submit" name="submitLogin" value="Login"></td>

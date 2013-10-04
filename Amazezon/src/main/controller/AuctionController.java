@@ -1,27 +1,22 @@
 package main.controller;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.naming.InitialContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 
 import main.form.RegistrationForm;
 import main.form.SearchForm;
 import main.form.validator.RegistrationFormValidator;
+import main.model.dao.Admin;
 import main.model.dao.AuctionDAO;
 import main.model.dao.UserDAO;
-import main.model.dao.Admin;
 import main.model.data.Auction;
 import main.model.data.AuctionList;
 
@@ -56,51 +51,6 @@ public class AuctionController extends HttpServlet {
     }
     
     public void init() {
-    	// Test code.
-    	try {
-			InitialContext cxt = new InitialContext();
-			if ( cxt == null ) {
-			   throw new Exception("Uh oh -- no context!");
-			}
-			Connection conn;
-			DataSource ds = (DataSource) cxt.lookup( "java:/comp/env/jdbc/postgres" );
-			
-			if ( ds == null ) {
-			   throw new Exception("Data source not found!");
-			}
-	    	
-	    	if (ds != null && cxt != null) {
-	    		System.out.println("FAWK YEAH");
-	    		
-	    		try {
-	                Class.forName("org.postgresql.Driver");
-
-
-
-	            }
-	            catch (java.lang.ClassNotFoundException e) {
-	                java.lang.System.err.print("ClassNotFoundException: Postgres Server JDBC");
-	                java.lang.System.err.println(e.getMessage());
-	                throw new Exception("No JDBC Driver found in Server");
-	            }
-	    		
-	    		try {
-	    			
-	    			conn = DriverManager.getConnection("jdbc:postgresql://localhost:5923/AuctionDB","auctionadmin","admin");
-	    			
-	    			System.out.println("Connected");
-	    		} catch (SQLException E) {
-
-	                java.lang.System.out.println("SQLException: " + E.getMessage());
-	                java.lang.System.out.println("SQLState: " + E.getSQLState());
-	                java.lang.System.out.println("VendorError: " + E.getErrorCode());
-
-	            }
-	    		
-	    	}
-    	} catch (Exception e) {
-    		System.err.println("Problem establishing connection: " + e);
-    	}
     }
 
 	/**
@@ -125,6 +75,19 @@ public class AuctionController extends HttpServlet {
 			request.getSession().setAttribute("auctionList", auctions);
 			request.getSession().setAttribute("searchForm", form);
 			response.sendRedirect("auction.jsp");
+		} else {
+			StringBuffer sb = request.getRequestURL();
+			String username = sb.substring(sb.indexOf("=")+1);
+			
+			UserDAO userDAO = new UserDAO();
+			try {
+				userDAO.setConfirmed(username);
+				request.getSession().setAttribute("success", "true");
+				response.sendRedirect("confirm.jsp");
+			} catch (SQLException e) {
+				e.printStackTrace();
+				response.sendRedirect("error.jsp");
+			}
 		}
 	}
 
@@ -165,11 +128,17 @@ public class AuctionController extends HttpServlet {
 					userBean.doInsert();
 					userBean.login(form.getUsername(), form.getPassword());
 					
-					StringBuffer sb = new StringBuffer("Welcome to Amazezon lols.");
+					String html = "Welcome to Amazezon click " +
+							"<a href='http://localhost:8080/Amazezon/username=" + form.getUsername() + 
+							"'>here</a> to confirm your registration with us.";
 					MailSender sender = MailSender.getMailSender();
-					sender.sendMessage("rofllol@gmail.com", form.getEmail(), "Confirmation for Amazezon", sb);
+					sender.sendMessage("rofllol@gmail.com", form.getEmail(), "Confirmation for Amazezon", html);
 					
-					response.sendRedirect("admin.jsp");
+					if (form.getIsAdmin()) {
+						response.sendRedirect("admin.jsp");
+					} else {
+						response.sendRedirect("auction.jsp");
+					}
 				} catch (Exception e) {
 					// TODO: send user to error page.
 					e.printStackTrace();
@@ -188,7 +157,11 @@ public class AuctionController extends HttpServlet {
 			
 			System.out.println("loginstatus is: "+request.getSession().getAttribute("loginStatus"));
 			if (userBean.login(username, password)) {
-				response.sendRedirect("admin.jsp");
+				if (userBean.getIsAdmin()) {
+					response.sendRedirect("admin.jsp");
+				} else {
+					response.sendRedirect("auction.jsp");
+				}
 			} else {
 				request.getSession().setAttribute("loginStatus","failed");
 				response.sendRedirect("login.jsp");

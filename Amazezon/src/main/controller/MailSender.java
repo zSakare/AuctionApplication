@@ -1,17 +1,20 @@
 package main.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.mail.Authenticator;
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.InternetHeaders;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -59,12 +62,12 @@ public class MailSender{
 					});
 	}
 	
-	public void sendMessage(String fromAddress, String toAddress, String mailSubject, StringBuffer text) throws AddressException, MessagingException {
-		Message message = new MimeMessage(session);
+	public void sendMessage(String fromAddress, String toAddress, String mailSubject, String html) throws AddressException, MessagingException, UnsupportedEncodingException {
+		MimeMessage message = new MimeMessage(session);
 		message.setFrom(new InternetAddress(fromAddress));
-		message.setRecipients(Message.RecipientType.TO,InternetAddress.parse(toAddress));
+		message.setRecipients(MimeMessage.RecipientType.TO,InternetAddress.parse(toAddress));
 		message.setSubject(mailSubject);
-		message.setText(text.toString());
+		message.setText(html, "UTF-8", "html");
 
 		Transport.send(message);
 

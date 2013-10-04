@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 public abstract class JDBCDriver {
 	private static final String DRIVER = "org.postgresql.Driver";
 	private static final String CONNECTION = "jdbc:postgresql://localhost:5923/AuctionDB";
@@ -11,21 +14,41 @@ public abstract class JDBCDriver {
 	private static final String DB_PASSWORD = "admin";
 	
 	public Connection getConnection() {
-		Connection connection = null;
+		Connection conn = null;
+    	try {
+			InitialContext cxt = new InitialContext();
+			
+			DataSource ds = (DataSource) cxt.lookup( "java:/comp/env/jdbc/postgres" );
+			
+			if ( ds == null ) {
+			   throw new Exception("Data source not found!");
+			}
+	    	
+	    	if (ds != null && cxt != null) {
+	    		try {
+	                Class.forName("org.postgresql.Driver");
+	            }
+	            catch (java.lang.ClassNotFoundException e) {
+	                java.lang.System.err.print("ClassNotFoundException: Postgres Server JDBC");
+	                java.lang.System.err.println(e.getMessage());
+	                throw new Exception("No JDBC Driver found in Server");
+	            }
+	    		
+	    		try {
+	    			conn = DriverManager.getConnection("jdbc:postgresql://localhost:5923/AuctionDB","auctionadmin","admin");
+	    			
+	    			System.out.println("Connected");
+	    		} catch (SQLException E) {
+	                java.lang.System.out.println("SQLException: " + E.getMessage());
+	                java.lang.System.out.println("SQLState: " + E.getSQLState());
+	                java.lang.System.out.println("VendorError: " + E.getErrorCode());
+	            }
+	    	}
+    	} catch (Exception e) {
+    		System.err.println("Problem establishing connection: " + e);
+    	}
 		
-		try {
-			Class.forName(DRIVER);
-		} catch (ClassNotFoundException e) {
-			System.err.println("Could not find driver. Check configurations. ClassNotFoundException: " + e);
-		}
-		
-		try {
-			connection = DriverManager.getConnection(CONNECTION, DB_USER, DB_PASSWORD);
-		} catch (SQLException e) {
-			System.err.println("Could not establish connection. SQLException: " + e);
-		}
-		
-		return connection;
+		return conn;
 	}
 	
 	public void doInsert() throws Exception {
