@@ -13,7 +13,7 @@
 <body>
 	<c:choose>
 		<c:when test="${userBean.loggedIn}">
-			<c:out value="You're logged in! sure you didn't mean to go to <a href='auction.jsp'>Auctions</a>" />
+			<p>You're logged in! sure you didn't mean to go to <a href='auction.jsp'>Auctions</a>" </p>
 		</c:when>
 		
 	</c:choose>

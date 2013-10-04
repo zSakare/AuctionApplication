@@ -11,6 +11,7 @@ create table Users (
    confirmed   boolean default false,
    isAdmin     boolean,
    banned      boolean default false,
+   messages    text,
    primary key (userID)
 );
 

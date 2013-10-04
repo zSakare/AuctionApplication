@@ -8,6 +8,7 @@
 <jsp:useBean id="auction" class="main.model.data.Auction" scope="session"/>
 <html>
 <head>
+
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Amazezon - Auctions</title>
 </head>
@@ -32,17 +33,30 @@
 	</div>
 	<table>
 		<c:if test="${!empty auctionList.auctions}">
-			<c:forEach var="auction" items="${auctionList.auctions}">
-				<tr>
-					<td> ${auction.auctionID} </td>
-				</tr>
-				<tr>
-					<td> ${auction.title} </td>
-				</tr>
-				<tr>
-					<td> ${auction.closingTime} </td>
-				</tr>
-			</c:forEach>
+			
+				
+				<c:forEach var="auction" items="${auctionList.auctions}">
+					<form name="viewAuctionForm" action="controller" method="POST">
+					<input type="hidden" name="action" value="viewAuction"/>
+					<input type="hidden" name="auctionID" value="${auction.auctionID}">
+						<table>	
+							<tr>
+								<td> <b>Title: </b>${auction.title} </td>
+							</tr>
+							<tr>
+								<td> <b>Closing Time: </b>${auction.closingTime} </td>
+							</tr>
+							<tr>
+								<td> <b>Description: </b>${auction.description} </td>
+							</tr>
+							<tr>
+								<td><input type="submit" value="View it here!" /></td>
+							</tr>
+							
+						</table>
+					</form>
+				</c:forEach>
+			
 		</c:if>
 	</table>
 </body>
