@@ -11,65 +11,64 @@
 <title>Amazezon - User Registration</title>
 </head>
 <body>
-	<c:choose>
-		<c:when test="${userBean.loggedIn}">
+	
+	<c:if test="${userBean.loggedIn}">
 
-			You're logged in! Are you sure you didn't mean to go to <a href='auction.jsp'>Auctions?</a>
+		You're logged in! Are you sure you didn't mean to go to <a href='auction.jsp'>Auctions?</a>
 
-		</c:when>
-		<c:otherwise>
-			<div id="register">
-				<form name="userRegistrationForm" action="controller" method="POST">
-					<input type="hidden" name="action" value="register"/>
-					<table>
-					<tr>
-						<td>Username*</td>
-						<td><input type="text" name="username" maxlength="50" value="${form.username}"/></td>
-					</tr>
-					<tr>	
-						<td>Password*</td>
-						<td><input type="password" name="password" maxlength="50" value="${form.password}"/></td>
-					</tr>
-					<tr>	
-						<td>Confirm Password*</td>
-						<td><input type="password" name="passwordConfirm" maxlength="50" value="${form.passwordConfirm}"/></td>
-					</tr>
-					<tr>
-						<td>Email*</td>
-						<td><input type="text" name="email" maxlength="100" value="${form.email}"/></td>
-					</tr>
-					<tr>
-						<td>Firstname</td>
-						<td><input type="text" name="firstName" maxlength="50" value="${form.firstname}"/></td>
-					</tr>
-					<tr>	
-						<td>Lastname</td>
-						<td><input type="text" name="lastName" maxlength="50" value="${form.lastname}"/></td>
-					</tr>
-					<tr>	
-						<td>Address</td>
-						<td><input type="text" name="address" maxlength="100" value="${form.address}"/></td>
-					</tr>
-					<tr>	
-						<td>Year of Birth</td>
-						<td><input type="text" name="dob" maxlength="4" value="${form.dob}"/></td>
-					</tr>
-					<tr>	
-						<td>Credit Card Number*</td>
-						<td><input type="text" name="creditCard" maxlength="19" value="${form.creditCard}"/></td>
-					</tr>
-					<tr>
-						<td>Admin</td>
-						<td>Yes<input type="radio" name="admin" value="yes" /><br />
-						No<input type="radio" name="admin" value="no" checked="checked"/>
-					</tr>
-					<tr>
-						<td><input type="submit" name="submitRegistration" value="Register"></td>
-					</tr>
-					</table>
-				</form>
-			</div>
-		</c:otherwise>
-	</c:choose>
+	</c:if>
+		
+	<div id="register">
+		<form name="userRegistrationForm" action="controller" method="POST">
+			<input type="hidden" name="action" value="register"/>
+			<table>
+			<tr>
+				<td>Username*</td>
+				<td><input type="text" name="username" maxlength="50" value="${form.username}"/></td>
+			</tr>
+			<tr>	
+				<td>Password*</td>
+				<td><input type="password" name="password" maxlength="50" value="${form.password}"/></td>
+			</tr>
+			<tr>	
+				<td>Confirm Password*</td>
+				<td><input type="password" name="passwordConfirm" maxlength="50" value="${form.passwordConfirm}"/></td>
+			</tr>
+			<tr>
+				<td>Email*</td>
+				<td><input type="text" name="email" maxlength="100" value="${form.email}"/></td>
+			</tr>
+			<tr>
+				<td>Firstname</td>
+				<td><input type="text" name="firstName" maxlength="50" value="${form.firstname}"/></td>
+			</tr>
+			<tr>	
+				<td>Lastname</td>
+				<td><input type="text" name="lastName" maxlength="50" value="${form.lastname}"/></td>
+			</tr>
+			<tr>	
+				<td>Address</td>
+				<td><input type="text" name="address" maxlength="100" value="${form.address}"/></td>
+			</tr>
+			<tr>	
+				<td>Year of Birth</td>
+				<td><input type="text" name="dob" maxlength="4" value="${form.dob}"/></td>
+			</tr>
+			<tr>	
+				<td>Credit Card Number*</td>
+				<td><input type="text" name="creditCard" maxlength="19" value="${form.creditCard}"/></td>
+			</tr>
+			<tr>
+				<td>Admin</td>
+				<td>Yes<input type="radio" name="admin" value="yes" /><br />
+				No<input type="radio" name="admin" value="no" checked="checked"/>
+			</tr>
+			<tr>
+				<td><input type="submit" name="submitRegistration" value="Register"></td>
+			</tr>
+			</table>
+		</form>
+	</div>
+		
 </body>
 </html>
