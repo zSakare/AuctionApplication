@@ -16,7 +16,7 @@ public class Auction implements Serializable {
 	private User owner;
 	private String itemName;
 	private String title;
-	private byte[] picture;
+	private String picture;
 	private String description;
 	private String postageDetails;
 	private float reservePrice;
@@ -45,10 +45,11 @@ public class Auction implements Serializable {
 	public void setItemName(String itemName) {
 		this.itemName = itemName;
 	}
-	public byte[] getPicture() {
+	public String getPicture() {
+		System.out.println("get picture was called");
 		return picture;
 	}
-	public void setPicture(byte[] picture) {
+	public void setPicture(String picture) {
 		this.picture = picture;
 	}
 	public String getDescription() {

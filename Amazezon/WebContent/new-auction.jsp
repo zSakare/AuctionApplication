@@ -10,7 +10,7 @@
 	
 	
 	<div id="newAuction">
-		<form name="createAuctionForm" action="controller" method="POST">
+		<form name="createAuctionForm" action="controller" method="POST" enctype="multipart/form-data">
 			<input type="hidden" name="action" value="createAuction"/>
 			<table>
 			<tr>
@@ -23,7 +23,7 @@
 			</tr>
 			<tr>	
 				<td>Picture</td>
-				<td><input type="text" name="picture" /></td>
+				<td><input type="file" name="picture" size="40"></td>
 			</tr>
 			<tr>
 				<td>Description</td>
