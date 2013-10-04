@@ -19,19 +19,7 @@
 		<c:when test="${userBean.loggedIn && userBean.isAdmin}">
 			Hello <c:out value="${userBean.firstName}" />
 			
-			<h3>Halt an Auction</h3>
-			<form name="haltAuctionForm" action="controller" method="POST">
-			<input type="hidden" name="action" value="haltAuction" />
-			Auction id: <input type="text" name="auctionid" maxlength="50" />
-			<input type="submit" name="haltAuctionSubmit" value="Halt Auction!" />
-			</form>
 			
-			<h3>Remove an auction</h3>
-			<form name="removeAuctionForm" action="controller" method="POST">
-			<input type="hidden" name="action" value="removeAuction" />
-			Auction id: <input type="text" name="auctionid" maxlength="50" />
-			<input type="submit" name="removeAuctionSubmit" value="Remove Auction!" />
-			</form>
 			<% 
 				AuctionDAO auctionDAO = new AuctionDAO();
 			    List<Auction> allAuctions = auctionDAO.getAllAuctions();
