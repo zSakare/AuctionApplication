@@ -28,6 +28,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 	private float biddingStartPrice;
 	private float biddingIncrement;
 	private int endTime;
+	private float startTime;
 
 	public void setAttributes(String ownerUsername, String title, String category,
 			String picture, String description, String postage,
@@ -227,7 +228,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 		String sql = "SELECT auctionid, userid, title, category, " +
 				"picture, description, postage, reserveprice, biddingstartprice, " +
 				"biddingincrement, endtime, firstname, lastname, username, password, " +
-				"email, address, yearofbirth, creditcard, halted, closed " +
+				"email, address, yearofbirth, creditcard, halted, closed, starttime " +
 				"FROM Auctions JOIN Users ON Users.userID=Auctions.creator " +
 				"WHERE title SIMILAR TO ? and category SIMILAR TO ?"; //get the row with the username on it
 
@@ -280,6 +281,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 					auction.setStartingPrice(rs.getFloat("biddingstartprice"));
 					auction.setBidIncrements(rs.getFloat("biddingincrement"));
 					auction.setClosingTime(rs.getInt("endtime"));
+					auction.setStartTime(rs.getTimestamp("starttime"));
 					
 					auctionsFound.add(auction);
 				}
@@ -314,7 +316,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 		String sql = "SELECT auctionid, userid, title, category, " +
 				"picture, description, postage, reserveprice, biddingstartprice, " +
 				"biddingincrement, endtime, firstname, lastname, username, password, " +
-				"email, address, yearofbirth, creditcard, halted " +
+				"email, address, yearofbirth, creditcard, halted, starttime " +
 				"FROM Auctions JOIN Users ON Users.userID=Auctions.creator " +
 				"WHERE auctionid=?;";
 
@@ -357,6 +359,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 					auction.setStartingPrice(rs.getFloat("biddingstartprice"));
 					auction.setBidIncrements(rs.getFloat("biddingincrement"));
 					auction.setClosingTime(rs.getInt("endtime"));
+					auction.setStartTime(rs.getTimestamp("starttime"));
 					
 				}
 			}
@@ -389,7 +392,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 		String sql = "SELECT auctionid, userid, title, category, " +
 				"picture, description, postage, reserveprice, biddingstartprice, " +
 				"biddingincrement, endtime, firstname, lastname, username, password, " +
-				"email, address, yearofbirth, creditcard, halted, closed " +
+				"email, address, yearofbirth, creditcard, halted, closed, starttime " +
 				"FROM Auctions JOIN Users ON Users.userID=Auctions.creator;";
 
 		
@@ -431,6 +434,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 					auction.setStartingPrice(rs.getFloat("biddingstartprice"));
 					auction.setBidIncrements(rs.getFloat("biddingincrement"));
 					auction.setClosingTime(rs.getInt("endtime"));
+					auction.setStartTime(rs.getTimestamp("starttime"));
 					
 					auctionsFound.add(auction);
 				}
@@ -521,5 +525,13 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 			}
 		}
 		return auctionid;
+	}
+
+	public float getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(float startTime) {
+		this.startTime = startTime;
 	}
 }

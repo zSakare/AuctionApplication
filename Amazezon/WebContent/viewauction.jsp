@@ -18,9 +18,9 @@
 	<h2>Postage</h2>
 	<c:out value="${auctionBean.postageDetails}" />
 	<h2>Current Bid</h2>
-	<c:out value="${auctionBean.startingPrice}" />
-	<c:out value="${auctionBean.bidIncrements}" />
-	<c:out value="${auctionBean.closingTime}" />
+	Starting Price: <c:out value="${auctionBean.startingPrice}" />
+	Bid Increment: <c:out value="${auctionBean.bidIncrements}" />
+	Closing Time: <c:out value="${auctionBean.endDate}" />
 </c:if>	
 	
 
