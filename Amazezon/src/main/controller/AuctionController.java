@@ -21,6 +21,7 @@ import main.form.SearchForm;
 import main.form.validator.RegistrationFormValidator;
 import main.model.dao.AuctionDAO;
 import main.model.dao.UserDAO;
+import main.model.dao.Admin;
 import main.model.data.Auction;
 import main.model.data.AuctionList;
 
@@ -41,6 +42,9 @@ public class AuctionController extends HttpServlet {
 	private static final String LOGIN = "login";
 	private static final String ACTION = "action";
 	private static final String AUCTION = "createAuction";
+	private static final String BAN = "ban";
+	private static final String REMOVEAUCTION = "removeAuction";
+	private static final String HALTAUCTION = "haltAuction";
 	
 	final Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -110,10 +114,10 @@ public class AuctionController extends HttpServlet {
 				form = new SearchForm();
 			}
 			
-			form.setItemName(request.getParameter("title"));
+			form.setTitle(request.getParameter("title"));
 			form.setCategory(request.getParameter("category"));
 			
-			List<Auction> auctionsFound = searchForAuctions(form.getItemName(), form.getCategory());
+			List<Auction> auctionsFound = searchForAuctions(form.getTitle(), form.getCategory());
 			AuctionList auctions = new AuctionList(); 
 			
 			auctions.setAuctions(auctionsFound);
@@ -141,9 +145,10 @@ public class AuctionController extends HttpServlet {
 				response.sendRedirect("register.jsp");
 				return;
 			} else {
-				
-				//request.getSession().setAttribute("newUser", newUser);
 				UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
+				
+				
+				
 				userBean.setAttributes(form.getUsername(), 
 										form.getPassword(), 
 										form.getEmail(), 
@@ -151,7 +156,8 @@ public class AuctionController extends HttpServlet {
 										form.getLastname(), 
 										form.getAddress(), 
 										form.getDob(), 
-										form.getCreditCard()); //same as what the constructor did before
+										form.getCreditCard(),
+										form.getIsAdmin()); //same as what the constructor did before
 				
 				System.out.println("first name: "+ userBean.getFirstName());
 				
@@ -190,7 +196,6 @@ public class AuctionController extends HttpServlet {
 		} else if (AUCTION.equals(request.getParameter(ACTION))) {
 			UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
 			String username = userBean.getUsername();
-			String itemName = request.getParameter("itemName");
 			String title = request.getParameter("title");
 			String category = request.getParameter("category");
 			String picture = request.getParameter("picture");
@@ -201,13 +206,51 @@ public class AuctionController extends HttpServlet {
 			Float biddingIncrement = Float.parseFloat(request.getParameter("biddingIncrements"));
 			int endTime = Integer.parseInt(request.getParameter("endTime"));
 			AuctionDAO auctionDAO = new AuctionDAO();
-			auctionDAO.setAttributes(username, itemName, title, category, picture, description, postageDetails, reservePrice, biddingStartPrice, biddingIncrement, endTime);
+			auctionDAO.setAttributes(username, title, category, picture, description, postageDetails, reservePrice, biddingStartPrice, biddingIncrement, endTime);
 			try {
 				auctionDAO.doInsert();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else if (BAN.equals(request.getParameter(ACTION))) {
+			Admin userBean = ((UserDAO) request.getSession().getAttribute("userBean")).loginAsAdmin(); // get the bean the user created
+			
+			String userToBan = request.getParameter("username");
+			if (userBean != null) { //if it is not null, it has successfully been logged in as admin 
+				userBean.ban(userToBan);
+			}
+			request.getSession().setAttribute("userBean", (UserDAO)userBean);
+			response.sendRedirect("admin.jsp");
+		} else if (HALTAUCTION.equals(request.getParameter(ACTION))) {
+			Admin userBean = ((UserDAO) request.getSession().getAttribute("userBean")).loginAsAdmin(); // get the bean the user created
+			
+			try {
+				int auctionid = Integer.parseInt(request.getParameter("auctionid"));
+				if (userBean != null) { //if it is not null, it has successfully been logged in as admin 
+					userBean.haltAuction(auctionid);
+				}
+			} catch (Exception e) {
+				userBean.setMessages(request.getParameter("auctionid")+" is not a valid id!");
+			}
+			
+			request.getSession().setAttribute("userBean", (UserDAO)userBean);
+			response.sendRedirect("admin.jsp");
+		} else if (REMOVEAUCTION.equals(request.getParameter(ACTION))) {
+			Admin userBean = ((UserDAO) request.getSession().getAttribute("userBean")).loginAsAdmin(); // get the bean the user created
+			
+			
+			try {
+				int auctionid = Integer.parseInt(request.getParameter("auctionid"));
+				if (userBean != null) { //if it is not null, it has successfully been logged in as admin 
+					userBean.removeAuction(auctionid);
+				}
+			} catch (Exception e) {
+				userBean.setMessages(request.getParameter("auctionid")+" is not a valid id!");
+			}
+			
+			request.getSession().setAttribute("userBean", (UserDAO)userBean);
+			response.sendRedirect("admin.jsp");
 		}
 	}
 
@@ -227,13 +270,14 @@ public class AuctionController extends HttpServlet {
 		form.setAddress(request.getParameter("address"));
 		form.setDob(Integer.parseInt(request.getParameter("dob")));
 		form.setCreditCard(request.getParameter("creditCard"));
+		form.setIsAdmin(request.getParameter("admin").equals("yes"));
 		return form;
 	}
 	
-	private List<Auction> searchForAuctions(String itemName, String category) {
+	private List<Auction> searchForAuctions(String title, String category) {
 		AuctionDAO auctionDAO = new AuctionDAO();
 		
-		return auctionDAO.selectWith(itemName, category);
+		return auctionDAO.selectWith(title, category);
 	}
 }
 

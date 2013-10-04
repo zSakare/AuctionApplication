@@ -18,11 +18,11 @@
 			<table>
 			<tr>
 				<td>Item Name</td>
-				<td><input type="text" name="title" maxlength="10" value="${form.getTitle}"/></td>
+				<td><input type="text" name="title" maxlength="10" value="${searchForm.title}"/></td>
 			</tr>
 			<tr>
 				<td>Category</td>
-				<td><input type="text" name="category" maxlength="50" value="${form.getCategory}"/></td>
+				<td><input type="text" name="category" maxlength="50" value="${searchForm.category}"/></td>
 			</tr>
 			<tr>
 				<td><input type="submit" name="submitSearch" value="auctionSearch"></td>
@@ -34,7 +34,10 @@
 		<c:if test="${!empty auctionList.auctions}">
 			<c:forEach var="auction" items="${auctionList.auctions}">
 				<tr>
-					<td> ${auction.itemName} </td>
+					<td> ${auction.auctionID} </td>
+				</tr>
+				<tr>
+					<td> ${auction.title} </td>
 				</tr>
 				<tr>
 					<td> ${auction.closingTime} </td>

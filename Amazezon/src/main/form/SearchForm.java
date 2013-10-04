@@ -1,14 +1,14 @@
 package main.form;
 
 public class SearchForm {
-	private String itemName;
+	private String title;
 	private String category;
 	
-	public String getItemName() {
-		return itemName;
+	public String getTitle() {
+		return title;
 	}
-	public void setItemName(String itemName) {
-		this.itemName = itemName;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	public String getCategory() {
 		return category;

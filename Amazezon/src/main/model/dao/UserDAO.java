@@ -21,6 +21,9 @@ public class UserDAO extends JDBCDriver implements Serializable {
 	private String creditCard;
 	private boolean loggedIn;
 	private boolean errorInForm;
+	private boolean isAdmin;
+	private boolean banned;
+	private String messages;
 	
 	//positions of columns in database
 	private static final int USERID = 1;
@@ -33,6 +36,9 @@ public class UserDAO extends JDBCDriver implements Serializable {
 	private static final int DOB = 8;
 	private static final int CREDITCARD = 9;
 	private static final int CONFIRMED = 10;
+	private static final int ISADMIN = 11;
+	private static final int BANNED = 12;
+	
 
 	public UserDAO() {
 		this.loggedIn = false;
@@ -41,7 +47,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 
 	public void setAttributes(String username, String password, String email,
 			String firstName, String lastName, String address, int dob,
-			String creditCard) {
+			String creditCard, boolean isAdmin) {
 		this.username = username;
 		this.password = password;
 		this.email = email;
@@ -52,6 +58,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 		this.creditCard = creditCard;
 		this.loggedIn = false;
 		this.errorInForm = false;
+		this.isAdmin = isAdmin;
 
 	}
 
@@ -62,6 +69,14 @@ public class UserDAO extends JDBCDriver implements Serializable {
 
 	public boolean getErrorInForm() {
 		return this.errorInForm;
+	}
+	
+	public boolean getIsAdmin() {
+		return this.isAdmin;
+	}
+	
+	public void setIsAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 	
 	public void setErrorInForm(boolean errorInForm) {
@@ -141,7 +156,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 		Connection conn = null;
 
 
-		String sql = "INSERT INTO USERS (firstname,lastname,username,password,email,address,yearOfBirth,creditCard,confirmed) VALUES (?,?,?,?,?,?,?,?,?);";
+		String sql = "INSERT INTO USERS (firstname,lastname,username,password,email,address,yearOfBirth,creditCard,confirmed, isAdmin) VALUES (?,?,?,?,?,?,?,?,?,?);";
 
 		PreparedStatement pst = null;
 		try {
@@ -161,6 +176,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 			pst.setString(8, creditCard);
 
 			pst.setBoolean(9, false);
+			pst.setBoolean(10, isAdmin);
 			pst.executeUpdate();
 			this.errorInForm = false;
 		} catch (SQLException e) {
@@ -179,7 +195,17 @@ public class UserDAO extends JDBCDriver implements Serializable {
 			}
 		}
 	}
-
+	
+	public Admin loginAsAdmin() {
+		if (this.isAdmin == false) {
+			return null;
+		} else {
+			Admin newAdmin = new Admin();
+			newAdmin.login(this.username,this.password);
+			return newAdmin;
+		}
+	}
+	
 	public boolean login(String username, String password) {
 		
 		this.loggedIn = false;
@@ -209,6 +235,8 @@ public class UserDAO extends JDBCDriver implements Serializable {
 				String addressDB = null;
 				int dobDB = 0;
 				String creditCardDB = null;
+				boolean isAdminDB = false;
+				boolean bannedDB = false;
 				//this loop should happen once
 				while (rs.next()) { //retrieving user information from db 
 					correctPass = rs.getString(PASSWORD);
@@ -218,6 +246,8 @@ public class UserDAO extends JDBCDriver implements Serializable {
 					addressDB = rs.getString(ADDRESS);
 					dobDB = rs.getInt(DOB);
 					creditCardDB = rs.getString(CREDITCARD);
+					isAdminDB = rs.getBoolean(ISADMIN);
+					bannedDB = rs.getBoolean(BANNED);
 					
 				}
 				if (correctPass != null && correctPass.equals(password)) { //store the information about the user for the db into this object
@@ -232,6 +262,8 @@ public class UserDAO extends JDBCDriver implements Serializable {
 					this.address = addressDB;
 					this.dob = dobDB;
 					this.creditCard = creditCardDB;
+					this.isAdmin = isAdminDB;
+					this.banned = bannedDB;
 				}
 			}
 			
@@ -270,6 +302,12 @@ public class UserDAO extends JDBCDriver implements Serializable {
 	//the following 2 functions are only here for the purpose of the userBean (easier to say userBean.isLoggedIn)
 	public boolean getLoggedIn() {
 		return this.loggedIn;
+	}
+	public String getMessages() {
+		return this.messages;
+	}
+	public void setMessages(String messages) {
+		this.messages = messages;
 	}
 	
 	public void setLoggedIn(boolean loggedIn) {
