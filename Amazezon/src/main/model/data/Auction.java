@@ -1,7 +1,6 @@
 package main.model.data;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,9 +21,10 @@ public class Auction implements Serializable {
 	private float reservePrice;
 	private float startingPrice;
 	private float bidIncrements;
-	private Date closingTime;
+	private int closingTime;
 	private List<Bid> bids;
 	private String category;
+	private boolean closed;
 	
 	// Getters and setters:
 	public int getAuctionID() {
@@ -82,10 +82,10 @@ public class Auction implements Serializable {
 	public void setBidIncrements(float bidIncrements) {
 		this.bidIncrements = bidIncrements;
 	}
-	public Date getClosingTime() {
+	public int getClosingTime() {
 		return closingTime;
 	}
-	public void setClosingTime(Date closingTime) {
+	public void setClosingTime(int closingTime) {
 		this.closingTime = closingTime;
 	}
 	public List<Bid> getBids() {
@@ -105,5 +105,11 @@ public class Auction implements Serializable {
 	}
 	public void setCategory(String category) {
 		this.category = category;
+	}
+	public boolean isClosed() {
+		return closed;
+	}
+	public void setClosed(boolean closed) {
+		this.closed = closed;
 	}
 }

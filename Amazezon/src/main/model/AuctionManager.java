@@ -15,17 +15,17 @@ public class AuctionManager {
 	
 	private static class AuctionTerminator implements Runnable {
 		private int auctionID;
-		private long closingTime;
+		private int closingTime;
 		
 		public AuctionTerminator(Auction auction) {
 			auctionID = auction.getAuctionID();
-			closingTime = auction.getClosingTime().getTime();
+			closingTime = auction.getClosingTime();
 		}
 
 		@Override
 		public void run() {
 			try {
-				Thread.sleep(closingTime);
+				Thread.sleep(closingTime*1000*60); // convert to milliseconds
 				AuctionDAO auctionDAO = new AuctionDAO();
 				
 				auctionDAO.closeAuction(auctionID);

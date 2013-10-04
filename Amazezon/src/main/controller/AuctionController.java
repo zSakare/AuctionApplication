@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import main.form.RegistrationForm;
 import main.form.SearchForm;
 import main.form.validator.RegistrationFormValidator;
+import main.model.AuctionManager;
 import main.model.dao.Admin;
 import main.model.dao.AuctionDAO;
 import main.model.dao.UserDAO;
@@ -24,7 +25,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.codec.binary.Base64;
-
 
 /**
  * Auction Controller:
@@ -105,35 +105,8 @@ public class AuctionController extends HttpServlet {
 	 */
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		
-		
-//		
-//		//Create a factory for disk-based file items
-//		FileItemFactory factory = new DiskFileItemFactory();
-//
-//		// Configure a repository (to ensure a secure temp location is used)
-//		ServletContext servletContext = this.getServletConfig().getServletContext();
-//		File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
-//		((DiskFileItemFactory) factory).setRepository(repository);
-//
-//		// Create a new file upload handler
-//		ServletFileUpload upload = new ServletFileUpload(factory);
-//
-//		// Parse the request
-//		try {
-//			
-//			upload.parseRequest(request.)
-//			List<FileItem> items = upload.parseRequest((RequestContext) request);
-//			System.out.println("first item: "+items.get(0));
-//		} catch (FileUploadException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
 		if (REGISTER.equals(request.getParameter(ACTION))) {
 			RegistrationForm form = setRegistrationForm(request);
-			
-			
 			
 			if (form.getUsername().isEmpty() || form.getPassword().isEmpty() || form.getCreditCard().isEmpty() || form.getEmail().isEmpty()) {
 				System.out.println("A field that cannot be null is missing a value.");
@@ -202,29 +175,6 @@ public class AuctionController extends HttpServlet {
 			} else {
 				request.getSession().setAttribute("loginStatus","failed");
 				response.sendRedirect("login.jsp");
-			}
-		} else if (AUCTION.equals(request.getParameter(ACTION))) {
-			System.out.println("received an auction");
-			UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
-			String username = userBean.getUsername();
-			String title = request.getParameter("title");
-			String category = request.getParameter("category");
-			String picture = request.getParameter("picture");
-			System.out.println("picture: "+picture);
-			String description = request.getParameter("description");
-			String postageDetails = request.getParameter("postageDetails");
-			Float reservePrice = Float.parseFloat(request.getParameter("reservePrice"));
-			Float biddingStartPrice = Float.parseFloat(request.getParameter("biddingStartPrice"));
-			Float biddingIncrement = Float.parseFloat(request.getParameter("biddingIncrements"));
-			int endTime = Integer.parseInt(request.getParameter("endTime"));
-			AuctionDAO auctionDAO = new AuctionDAO();
-			//auctionDAO.setAttributes(username, title, category, picture, description, postageDetails, reservePrice, biddingStartPrice, biddingIncrement, endTime);
-			try {
-				auctionDAO.doInsert();
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		} else if (BAN.equals(request.getParameter(ACTION))) {
 			Admin userBean = ((UserDAO) request.getSession().getAttribute("userBean")).loginAsAdmin(); // get the bean the user created
@@ -295,16 +245,20 @@ public class AuctionController extends HttpServlet {
 					auctionDAO.setAttributes(username, title, category, picture, description, postageDetails, reservePrice, biddingStartPrice, biddingIncrement, endTime);
 					try {
 						auctionDAO.doInsert();
+						
+						Auction auction = new Auction();
+						auction.setAuctionID(auctionDAO.getAuctionID());
+						auction.setClosingTime(Integer.parseInt(endTimeString));
+						
+						AuctionManager.shutDownAuction(auction);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println("Failed to add new auction");
+						response.sendRedirect("auction.jsp");
 					}
 				}
-				
-				
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Failed to receive form input");
+				response.sendRedirect("new-auction.jsp");
 			}
 		}
 	}
