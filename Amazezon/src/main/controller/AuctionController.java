@@ -159,6 +159,10 @@ public class AuctionController extends HttpServlet {
 					userBean.doInsert();
 					userBean.login(form.getUsername(), form.getPassword());
 					
+					StringBuffer sb = new StringBuffer("Welcome to Amazezon lols.");
+					MailSender sender = MailSender.getMailSender();
+					sender.sendMessage("rofllol@gmail.com", form.getEmail(), "Confirmation for Amazezon", sb);
+					
 					response.sendRedirect("admin.jsp");
 				} catch (Exception e) {
 					// TODO: send user to error page.

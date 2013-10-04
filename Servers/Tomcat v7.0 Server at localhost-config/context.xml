@@ -30,12 +30,12 @@
     <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
     -->
 
-	<Resource name="mail/Session" auth="Container"
-            type="javax.mail.Session"
-            mail.smtp.host="smtp.cse.unsw.edu.au"
-            mail.smtp.auth="true"
-            mail.smtp.user="YOUR_CSE_USERNAME"
-            mail.smtp.password="YOUR_CSE_PASSWORD"
-            mail.smtp.starttls.enable="true"
-            />
+  	<Resource name="mail/Session" auth="Container"
+           type="javax.mail.Session"
+           mail.smtp.host="smtp.gmail.com"
+           mail.smtp.auth="true"
+           mail.smtp.user="sakare@gmail.com"
+           mail.smtp.password="B08375K"
+           mail.smtp.starttls.enable="true"
+           />
 </Context>
