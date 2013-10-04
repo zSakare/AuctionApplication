@@ -1,3 +1,6 @@
+<%@page import="main.model.dao.AuctionDAO"%>
+<%@page import="main.model.data.Auction"%>
+<%@ page import="java.util.List" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@ page isELIgnored ="false" %> 
@@ -28,9 +31,14 @@
 			Auction id: <input type="text" name="auctionid" maxlength="50" />
 			<input type="submit" name="removeAuctionSubmit" value="Remove Auction!" />
 			</form>
+			<% 
+				AuctionDAO auctionDAO = new AuctionDAO();
+			    List<Auction> allAuctions = auctionDAO.getAllAuctions();
+				request.getSession().setAttribute("allAuctions", allAuctions);
+			%>
 			
-			<c:if test="${!empty auctionList.auctions}">
-				<c:forEach var="auction" items="${auctionList.auctions}">
+			<c:if test="${!empty allAuctions}">
+				<c:forEach var="auction" items="${allAuctions}">
 					<tr>
 						<td><b>ID</b></td><td> ${auction.auctionID} </td><br/>
 					</tr>

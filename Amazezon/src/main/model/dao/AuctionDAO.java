@@ -304,4 +304,80 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 		return auctionsFound;
 	}
 	
+	public List<Auction> getAllAuctions() {
+		System.out.println("in function");
+		List<Auction> auctionsFound = new ArrayList<Auction>();
+		
+		Connection conn = null;
+
+		ResultSet rs = null;
+
+		String sql = "SELECT auctionid, userid, title, category, " +
+				"picture, description, postage, reserveprice, biddingstartprice, " +
+				"biddingincrement, endtime, firstname, lastname, username, password, " +
+				"email, address, yearofbirth, creditcard, halted " +
+				"FROM Auctions JOIN Users ON Users.userID=Auctions.creator;";
+
+		
+		
+		PreparedStatement pst = null;
+		try {
+			conn = getConnection();
+
+			pst = conn.prepareStatement(sql);
+			
+
+			rs = pst.executeQuery();
+			
+			// extract data from the ResultSet
+			// Convert to auction list.
+			while (rs.next()) { 
+				System.out.println("in loop");
+				Auction auction = new Auction();
+				
+				User owner = new User();
+				if (!rs.getBoolean("halted")) {
+					owner.setUserID(rs.getInt("userid"));
+					owner.setUsername(rs.getString("username"));
+					owner.setFirstname(rs.getString("firstname"));
+					owner.setLastname(rs.getString("lastname"));
+					owner.setEmail(rs.getString("email"));
+					owner.setDob(rs.getInt("yearofbirth"));
+					owner.setCreditCard(rs.getString("creditcard"));
+					owner.setAddress(rs.getString("address"));
+					
+					auction.setAuctionID(rs.getInt("auctionid"));
+					auction.setOwner(owner);
+					auction.setTitle(rs.getString("title"));
+					auction.setCategory(rs.getString("category"));
+	//				auction.setPicture(rs.getBytes("picture")); TODO: Add when pictures can be uploaded
+					auction.setDescription(rs.getString("description"));
+					auction.setPostageDetails(rs.getString("postage"));
+					auction.setReservePrice(rs.getFloat("reserveprice"));
+					auction.setStartingPrice(rs.getFloat("biddingstartprice"));
+					auction.setBidIncrements(rs.getFloat("biddingincrement"));
+					auction.setClosingTime(new Date(rs.getLong("endtime")));
+					
+					auctionsFound.add(auction);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return auctionsFound;
+	}
+	
 }
