@@ -25,7 +25,7 @@ create table Auctions (
    reservePrice      float not null,
    biddingStartPrice float not null,
    biddingIncrement  float not null,
-   endTime           int,
+   endTime           int default 10,
    halted            boolean default false,
    closed            boolean default false,
    primary key (auctionID)

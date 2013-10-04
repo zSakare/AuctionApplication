@@ -11,8 +11,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import main.form.NewAuctionForm;
 import main.form.RegistrationForm;
 import main.form.SearchForm;
+import main.form.validator.NewAuctionFormValidator;
 import main.form.validator.RegistrationFormValidator;
 import main.model.AuctionManager;
 import main.model.dao.Admin;
@@ -150,8 +152,6 @@ public class AuctionController extends HttpServlet {
 						response.sendRedirect("auction.jsp");
 					}
 				} catch (Exception e) {
-					// TODO: send user to error page.
-					e.printStackTrace();
 					response.sendRedirect("error.jsp");
 				}
 				
@@ -223,37 +223,41 @@ public class AuctionController extends HttpServlet {
 				if (string1.equals(AUCTION)) {
 					//TODO: check correct fields are here
 					String action = new String(items.get(0).get());
-					String title = new String(items.get(1).get());
-					String category = new String(items.get(2).get());
-					//String picture = new Base64Base64.encodeBase64URLSafeString();
-					String picture = new Base64().encodeToString(items.get(3).get());
-					String description = new String(items.get(4).get());
-					String postageDetails = new String(items.get(5).get());
-					String reservePriceString = new String(items.get(6).get());
-					String biddingStartPriceString = new String(items.get(7).get());
-					String biddingIncrementString = new String(items.get(8).get());
-					String endTimeString = new String(items.get(9).get());
 					
 					UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
 					String username = userBean.getUsername();
 					
-					Float reservePrice = Float.parseFloat(reservePriceString);
-					Float biddingStartPrice = Float.parseFloat(biddingStartPriceString);
-					Float biddingIncrement = Float.parseFloat(biddingIncrementString);
-					int endTime = Integer.parseInt(endTimeString);
-					AuctionDAO auctionDAO = new AuctionDAO();
-					auctionDAO.setAttributes(username, title, category, picture, description, postageDetails, reservePrice, biddingStartPrice, biddingIncrement, endTime);
-					try {
-						auctionDAO.doInsert();
+					NewAuctionForm form = setNewAuctionForm(request, items);
+					if (NewAuctionFormValidator.validate(form).isEmpty()) {
+						AuctionDAO auctionDAO = new AuctionDAO();
+						auctionDAO.setAttributes(username, 
+												form.getTitle(), 
+												form.getCategory(), 
+												form.getPicture(), 
+												form.getDescription(), 
+												form.getPostageDetails(), 
+												form.getReservePrice(), 
+												form.getBiddingStartPrice(), 
+												form.getBiddingIncrement(), 
+												form.getEndTime());
 						
-						Auction auction = new Auction();
-						auction.setAuctionID(auctionDAO.getAuctionID());
-						auction.setClosingTime(Integer.parseInt(endTimeString));
-						
-						AuctionManager.shutDownAuction(auction);
-					} catch (Exception e) {
-						System.out.println("Failed to add new auction");
-						response.sendRedirect("auction.jsp");
+						try {
+							auctionDAO.doInsert();
+							
+							Auction auction = new Auction();
+							auction.setAuctionID(auctionDAO.getAuctionID());
+							auction.setClosingTime(Integer.parseInt(new String(items.get(9).get())));
+							
+							AuctionManager.shutDownAuction(auction);
+							
+							response.sendRedirect("auction.jsp");
+						} catch (Exception e) {
+							System.out.println("Failed to add new auction");
+							response.sendRedirect("auction.jsp");
+						}
+					} else {
+						request.getSession().setAttribute("newAuctionForm", form);
+						response.sendRedirect("new-auction.jsp");
 					}
 				}
 			} catch (Exception e) {
@@ -261,6 +265,26 @@ public class AuctionController extends HttpServlet {
 				response.sendRedirect("new-auction.jsp");
 			}
 		}
+	}
+
+	private NewAuctionForm setNewAuctionForm(HttpServletRequest request, List<FileItem> items) {
+		NewAuctionForm form = (NewAuctionForm) request.getSession().getAttribute("newAuctionForm");
+		
+		if (form == null) {
+			form = new NewAuctionForm();
+		}
+		
+		form.setTitle(new String(items.get(1).get()));
+		form.setCategory(new String(items.get(2).get()));
+		form.setPicture(new Base64().encodeToString(items.get(3).get()));
+		form.setDescription(new String(items.get(4).get()));
+		form.setPostageDetails(new String(items.get(5).get()));
+		form.setPostageDetails(new String(items.get(5).get()));
+		form.setReservePrice(Float.parseFloat(new String(items.get(6).get())));
+		form.setBiddingStartPrice(Float.parseFloat(new String(items.get(7).get())));
+		form.setBiddingIncrement(Float.parseFloat(new String(items.get(8).get())));
+		form.setEndTime(Integer.parseInt(new String(items.get(9).get())));
+		return form;
 	}
 
 	private RegistrationForm setRegistrationForm(HttpServletRequest request) {
