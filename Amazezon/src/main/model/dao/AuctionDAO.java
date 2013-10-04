@@ -231,12 +231,17 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 				"FROM Auctions JOIN Users ON Users.userID=Auctions.creator " +
 				"WHERE title SIMILAR TO ? and category SIMILAR TO ?;"; //get the row with the username on it
 
+
 		if (title.isEmpty()) {
 			title = "%";
+		} else {
+			title = "%" + title + "%";
 		}
 		
 		if (category.isEmpty()) {
 			category = "%";
+		} else {
+			category = "%" + category + "%";
 		}
 		
 		PreparedStatement pst = null;
@@ -353,8 +358,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 					auction.setStartingPrice(rs.getFloat("biddingstartprice"));
 					auction.setBidIncrements(rs.getFloat("biddingincrement"));
 					auction.setClosingTime(rs.getInt("endtime"));
-					
-					
+
 				}
 			}
 		} catch (Exception e) {
