@@ -78,6 +78,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 			pst.setFloat(8, biddingStartPrice);
 			pst.setFloat(9, biddingIncrement);
 			pst.setInt(10, endTime);
+			
 			pst.executeUpdate();
 		} catch (SQLException e) {
 			throw new SQLException("Unable to insert auction. SQLException: " + e);
@@ -349,7 +350,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 					auction.setOwner(owner);
 					auction.setTitle(rs.getString("title"));
 					auction.setCategory(rs.getString("category"));
-	//				auction.setPicture(rs.getBytes("picture")); TODO: Add when pictures can be uploaded
+					auction.setPicture(rs.getString("picture")); 
 					auction.setDescription(rs.getString("description"));
 					auction.setPostageDetails(rs.getString("postage"));
 					auction.setReservePrice(rs.getFloat("reserveprice"));

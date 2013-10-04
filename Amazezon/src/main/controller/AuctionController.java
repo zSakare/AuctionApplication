@@ -20,6 +20,12 @@ import main.model.dao.UserDAO;
 import main.model.data.Auction;
 import main.model.data.AuctionList;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.tomcat.util.codec.binary.Base64;
+
+
 /**
  * Auction Controller:
  * Handles -
@@ -91,12 +97,43 @@ public class AuctionController extends HttpServlet {
 		}
 	}
 
+	
+	
+	
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		
+		
+//		
+//		//Create a factory for disk-based file items
+//		FileItemFactory factory = new DiskFileItemFactory();
+//
+//		// Configure a repository (to ensure a secure temp location is used)
+//		ServletContext servletContext = this.getServletConfig().getServletContext();
+//		File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
+//		((DiskFileItemFactory) factory).setRepository(repository);
+//
+//		// Create a new file upload handler
+//		ServletFileUpload upload = new ServletFileUpload(factory);
+//
+//		// Parse the request
+//		try {
+//			
+//			upload.parseRequest(request.)
+//			List<FileItem> items = upload.parseRequest((RequestContext) request);
+//			System.out.println("first item: "+items.get(0));
+//		} catch (FileUploadException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		if (REGISTER.equals(request.getParameter(ACTION))) {
 			RegistrationForm form = setRegistrationForm(request);
+			
+			
 			
 			if (form.getUsername().isEmpty() || form.getPassword().isEmpty() || form.getCreditCard().isEmpty() || form.getEmail().isEmpty()) {
 				System.out.println("A field that cannot be null is missing a value.");
@@ -167,11 +204,13 @@ public class AuctionController extends HttpServlet {
 				response.sendRedirect("login.jsp");
 			}
 		} else if (AUCTION.equals(request.getParameter(ACTION))) {
+			System.out.println("received an auction");
 			UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
 			String username = userBean.getUsername();
 			String title = request.getParameter("title");
 			String category = request.getParameter("category");
 			String picture = request.getParameter("picture");
+			System.out.println("picture: "+picture);
 			String description = request.getParameter("description");
 			String postageDetails = request.getParameter("postageDetails");
 			Float reservePrice = Float.parseFloat(request.getParameter("reservePrice"));
@@ -179,7 +218,7 @@ public class AuctionController extends HttpServlet {
 			Float biddingIncrement = Float.parseFloat(request.getParameter("biddingIncrements"));
 			int endTime = Integer.parseInt(request.getParameter("endTime"));
 			AuctionDAO auctionDAO = new AuctionDAO();
-			auctionDAO.setAttributes(username, title, category, picture, description, postageDetails, reservePrice, biddingStartPrice, biddingIncrement, endTime);
+			//auctionDAO.setAttributes(username, title, category, picture, description, postageDetails, reservePrice, biddingStartPrice, biddingIncrement, endTime);
 			try {
 				auctionDAO.doInsert();
 				
@@ -224,7 +263,49 @@ public class AuctionController extends HttpServlet {
 			}
 			
 			request.getSession().setAttribute("userBean", (UserDAO)userBean);
+			
 			response.sendRedirect("admin.jsp");
+		} else {
+			try {
+				List<FileItem> items = new ServletFileUpload(
+					    new DiskFileItemFactory()).parseRequest(request);
+				String string1 = new String(items.get(0).get());
+				if (string1.equals(AUCTION)) {
+					//TODO: check correct fields are here
+					String action = new String(items.get(0).get());
+					String title = new String(items.get(1).get());
+					String category = new String(items.get(2).get());
+					//String picture = new Base64Base64.encodeBase64URLSafeString();
+					String picture = new Base64().encodeToString(items.get(3).get());
+					String description = new String(items.get(4).get());
+					String postageDetails = new String(items.get(5).get());
+					String reservePriceString = new String(items.get(6).get());
+					String biddingStartPriceString = new String(items.get(7).get());
+					String biddingIncrementString = new String(items.get(8).get());
+					String endTimeString = new String(items.get(9).get());
+					
+					UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
+					String username = userBean.getUsername();
+					
+					Float reservePrice = Float.parseFloat(reservePriceString);
+					Float biddingStartPrice = Float.parseFloat(biddingStartPriceString);
+					Float biddingIncrement = Float.parseFloat(biddingIncrementString);
+					int endTime = Integer.parseInt(endTimeString);
+					AuctionDAO auctionDAO = new AuctionDAO();
+					auctionDAO.setAttributes(username, title, category, picture, description, postageDetails, reservePrice, biddingStartPrice, biddingIncrement, endTime);
+					try {
+						auctionDAO.doInsert();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 
