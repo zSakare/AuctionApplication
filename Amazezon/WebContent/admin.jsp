@@ -12,20 +12,37 @@
 	<p><c:out value="${userBean.messages}" /></p>
 	<jsp:setProperty name="userBean" property="messages" value="" />
 	<c:choose>
-		<c:when test="${userBean.isAdmin}">
+		<c:when test="${userBean.loggedIn && userBean.isAdmin}">
 			Hello <c:out value="${userBean.firstName}" />
+			
 			<h3>Halt an Auction</h3>
 			<form name="haltAuctionForm" action="controller" method="POST">
 			<input type="hidden" name="action" value="haltAuction" />
-			Auction Name: <input type="text" name="auctionName" maxlength="50" />
+			Auction id: <input type="text" name="auctionid" maxlength="50" />
 			<input type="submit" name="haltAuctionSubmit" value="Halt Auction!" />
 			</form>
+			
 			<h3>Remove an auction</h3>
 			<form name="removeAuctionForm" action="controller" method="POST">
 			<input type="hidden" name="action" value="removeAuction" />
-			Auction Name: <input type="text" name="auctionName" maxlength="50" />
+			Auction id: <input type="text" name="auctionid" maxlength="50" />
 			<input type="submit" name="removeAuctionSubmit" value="Remove Auction!" />
 			</form>
+			
+			<c:if test="${!empty auctionList.auctions}">
+				<c:forEach var="auction" items="${auctionList.auctions}">
+					<tr>
+						<td><b>ID</b></td><td> ${auction.auctionID} </td><br/>
+					</tr>
+					<tr>
+						<td> <b>Title</b> </td><td>${auction.title} </td><br/>
+					</tr>
+					<tr>
+						<td><b>End Time</b></td><td> ${auction.closingTime} </td><br/><br/>
+					</tr>
+				</c:forEach>
+			</c:if>
+			
 			<h3>Ban a user</h3>
 			<form name="banForm" action="controller" method="POST">
 			<input type="hidden" name="action" value="ban" />
@@ -34,9 +51,14 @@
 			</form>
 			
 		</c:when>
-		<c:otherwise>
+		<c:when test="${not userBean.loggedIn}">
+			<p>Sorry you're not logged in!</p>
+		</c:when>
+		<c:when test="${not userBean.isAdmin}">
 			<p>Sorry you're not an admin!</p>
-		</c:otherwise>
+			
+		</c:when>
+		
 		
 	</c:choose>
 	

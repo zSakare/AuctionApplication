@@ -197,9 +197,13 @@ public class UserDAO extends JDBCDriver implements Serializable {
 	}
 	
 	public Admin loginAsAdmin() {
-		Admin newAdmin = new Admin();
-		newAdmin.login(this.username,this.password);
-		return newAdmin;
+		if (this.isAdmin == false) {
+			return null;
+		} else {
+			Admin newAdmin = new Admin();
+			newAdmin.login(this.username,this.password);
+			return newAdmin;
+		}
 	}
 	
 	public boolean login(String username, String password) {

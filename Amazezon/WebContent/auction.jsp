@@ -34,7 +34,10 @@
 		<c:if test="${!empty auctionList.auctions}">
 			<c:forEach var="auction" items="${auctionList.auctions}">
 				<tr>
-					<td> ${auction.itemName} </td>
+					<td> ${auction.auctionID} </td>
+				</tr>
+				<tr>
+					<td> ${auction.title} </td>
 				</tr>
 				<tr>
 					<td> ${auction.closingTime} </td>

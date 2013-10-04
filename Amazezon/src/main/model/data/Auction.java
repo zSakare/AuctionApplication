@@ -1,12 +1,17 @@
 package main.model.data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Auction bean to describe an auction.
  */
-public class Auction {
+public class Auction implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7097444102553414751L;
 	private int auctionID;
 	private User owner;
 	private String itemName;

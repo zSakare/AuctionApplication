@@ -14,10 +14,6 @@
 			<input type="hidden" name="action" value="createAuction"/>
 			<table>
 			<tr>
-				<td>Item Name*</td>
-				<td><input type="text" name="itemName" /></td>
-			</tr>
-			<tr>
 				<td>Title*</td>
 				<td><input type="text" name="title" /></td>
 			</tr>
