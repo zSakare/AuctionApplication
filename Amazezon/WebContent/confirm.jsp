@@ -10,10 +10,10 @@
 </head>
 <body>
 	<c:if test="${success eq 'true'}">
-		Confirmed! Click <a href='http://localhost:8080/Amazezon/login.jsp'>here</a> to login. 
+		Confirmed! Click <a href='login.jsp'>here</a> to login. 
 	</c:if>
 	<c:if test="${not success eq 'true'}">
-		Oops! Looks like something went wrong, go back to login <a href='http://localhost:8080/Amazezon/login.jsp'>here</a>.
+		Oops! Looks like something went wrong, go back to login <a href='login.jsp'>here</a>.
 	</c:if>
 </body>
 </html>

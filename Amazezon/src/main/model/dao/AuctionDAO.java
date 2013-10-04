@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import main.model.data.Auction;
@@ -194,14 +193,10 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 			
 
 			rs = pst.executeQuery();
-			// extract data from the ResultSet
-			// TODO: check if there are multiple results for a username
 			
 			//this loop should happen once
 			while (rs.next()) { //retrieving user information from db 
-				
 				ownerID = rs.getInt(1);
-				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -232,7 +227,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 		String sql = "SELECT auctionid, userid, title, category, " +
 				"picture, description, postage, reserveprice, biddingstartprice, " +
 				"biddingincrement, endtime, firstname, lastname, username, password, " +
-				"email, address, yearofbirth, creditcard, halted " +
+				"email, address, yearofbirth, creditcard, halted, closed " +
 				"FROM Auctions JOIN Users ON Users.userID=Auctions.creator " +
 				"WHERE title SIMILAR TO %?% and category SIMILAR TO %?%"; //get the row with the username on it
 
@@ -257,11 +252,10 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 			// extract data from the ResultSet
 			// Convert to auction list.
 			while (rs.next()) { 
-				System.out.println("in loop");
 				Auction auction = new Auction();
 				
 				User owner = new User();
-				if (!rs.getBoolean("halted")) {
+				if (!rs.getBoolean("halted") && !rs.getBoolean("closed")) {
 					owner.setUserID(rs.getInt("userid"));
 					owner.setUsername(rs.getString("username"));
 					owner.setFirstname(rs.getString("firstname"));
@@ -275,13 +269,13 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 					auction.setOwner(owner);
 					auction.setTitle(rs.getString("title"));
 					auction.setCategory(rs.getString("category"));
-					auction.setPicture(rs.getString("picture")); 
+					auction.setPicture(rs.getString("picture"));
 					auction.setDescription(rs.getString("description"));
 					auction.setPostageDetails(rs.getString("postage"));
 					auction.setReservePrice(rs.getFloat("reserveprice"));
 					auction.setStartingPrice(rs.getFloat("biddingstartprice"));
 					auction.setBidIncrements(rs.getFloat("biddingincrement"));
-					auction.setClosingTime(new Date(rs.getLong("endtime")));
+					auction.setClosingTime(rs.getInt("endtime"));
 					
 					auctionsFound.add(auction);
 				}
@@ -383,7 +377,6 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 	}
 	
 	public List<Auction> getAllAuctions() {
-		System.out.println("in function");
 		List<Auction> auctionsFound = new ArrayList<Auction>();
 		
 		Connection conn = null;
@@ -393,7 +386,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 		String sql = "SELECT auctionid, userid, title, category, " +
 				"picture, description, postage, reserveprice, biddingstartprice, " +
 				"biddingincrement, endtime, firstname, lastname, username, password, " +
-				"email, address, yearofbirth, creditcard, halted " +
+				"email, address, yearofbirth, creditcard, halted, closed " +
 				"FROM Auctions JOIN Users ON Users.userID=Auctions.creator;";
 
 		
@@ -414,7 +407,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 				Auction auction = new Auction();
 				
 				User owner = new User();
-				if (!rs.getBoolean("halted")) {
+				if (!rs.getBoolean("halted") && !rs.getBoolean("closed")) {
 					owner.setUserID(rs.getInt("userid"));
 					owner.setUsername(rs.getString("username"));
 					owner.setFirstname(rs.getString("firstname"));
@@ -434,7 +427,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 					auction.setReservePrice(rs.getFloat("reserveprice"));
 					auction.setStartingPrice(rs.getFloat("biddingstartprice"));
 					auction.setBidIncrements(rs.getFloat("biddingincrement"));
-					auction.setClosingTime(new Date(rs.getLong("endtime")));
+					auction.setClosingTime(rs.getInt("endtime"));
 					
 					auctionsFound.add(auction);
 				}
@@ -457,5 +450,73 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 
 		return auctionsFound;
 	}
-	
+
+	public void closeAuction(int auctionID) {
+		Connection conn = null;
+		String sql = "UPDATE Auctions SET closed=? WHERE auctionid=?";
+
+		PreparedStatement pst = null;
+		try {
+			conn = getConnection();
+			pst = conn.prepareStatement(sql);
+			
+			pst.setBoolean(1, true);
+			pst.setInt(2, auctionID);
+			
+			pst.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public Integer getAuctionID() {
+		Integer auctionid = null;
+		Connection conn = null;
+		String sql = "SELECT auctionid FROM auctions WHERE title=? and category=? and picture=? and endTime=?";
+
+		PreparedStatement pst = null;
+		try {
+			conn = getConnection();
+			pst = conn.prepareStatement(sql);
+			
+			pst.setString(1, title);
+			pst.setString(2, category);
+			pst.setString(3, picture);
+			pst.setInt(4, endTime);
+			
+			ResultSet rs = pst.executeQuery();
+
+			while (rs.next()) {
+				auctionid = rs.getInt("auctionid");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return auctionid;
+	}
 }

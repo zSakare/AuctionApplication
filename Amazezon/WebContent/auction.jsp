@@ -13,6 +13,7 @@
 <title>Amazezon - Auctions</title>
 </head>
 <body>
+	<a href='new-auction.jsp'>Create New Auction</a>
 	<div id="search">
 		<form name="auctionSearchForm" action="controller" method="GET">
 			<input type="hidden" name="action" value="auctionSearch"/>
