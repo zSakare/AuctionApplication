@@ -221,10 +221,15 @@ public class AuctionController extends HttpServlet {
 		} else if (HALTAUCTION.equals(request.getParameter(ACTION))) {
 			Admin userBean = ((UserDAO) request.getSession().getAttribute("userBean")).loginAsAdmin(); // get the bean the user created
 			
-			String userToBan = request.getParameter("username");
-			if (userBean != null) { //if it is not null, it has successfully been logged in as admin 
-				userBean.ban(userToBan);
+			try {
+				int auctionid = Integer.parseInt(request.getParameter("auctionid"));
+				if (userBean != null) { //if it is not null, it has successfully been logged in as admin 
+					userBean.haltAuction(auctionid);
+				}
+			} catch (Exception e) {
+				userBean.setMessages(request.getParameter("auctionid")+" is not a valid id!");
 			}
+			
 			request.getSession().setAttribute("userBean", (UserDAO)userBean);
 			response.sendRedirect("admin.jsp");
 		} else if (REMOVEAUCTION.equals(request.getParameter(ACTION))) {
