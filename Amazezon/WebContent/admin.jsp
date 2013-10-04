@@ -47,9 +47,9 @@
 			
 			<h3>Ban a user</h3>
 			<form name="banForm" action="controller" method="POST">
-			<input type="hidden" name="action" value="ban" />
-			Username: <input type="text" name="username" maxlength="50" />
-			<input type="submit" name="banSubmit" value="Ban!" />
+				<input type="hidden" name="action" value="ban" />
+				Username: <input type="text" name="username" maxlength="50" />
+				<input type="submit" name="banSubmit" value="Ban!" />
 			</form>
 			
 		</c:when>

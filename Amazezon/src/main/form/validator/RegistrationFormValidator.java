@@ -31,10 +31,11 @@ public class RegistrationFormValidator {
 		
 		int year = Calendar.getInstance().get(Calendar.YEAR);
 		// Cannot be born in future.
-		if (year < form.getDob()) {
-			errors.add(new FormError("dob", form.getDob().toString(), "Date of birth <" + form.getDob() + "> cannot exceed current year"));
+		if (form.getDob() != null) {
+			if (year < form.getDob()) {
+				errors.add(new FormError("dob", form.getDob().toString(), "Date of birth <" + form.getDob() + "> cannot exceed current year"));
+			}
 		}
-		
 		Pattern addressPattern = Pattern.compile(ADDRESS_PATTERN);
 		Matcher addressMatcher = addressPattern.matcher(form.getAddress());
 		// Check address does not have malicious characters.

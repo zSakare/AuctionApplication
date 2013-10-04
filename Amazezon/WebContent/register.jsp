@@ -14,10 +14,19 @@
 	
 	<c:if test="${userBean.loggedIn}">
 
-		You're logged in! Are you sure you didn't mean to go to <a href='auction.jsp'>Auctions?</a>
+		You're logged in! Are you sure you didn't mean to go to <a href='auction.jsp'>Auctions?</a><br>
 
 	</c:if>
-		
+	
+	<c:if test="${formErrors != ''}">
+		<c:forEach var="formError" items="${formErrors}">
+			<c:out value="${formError.error}"/><br>
+		</c:forEach>
+	</c:if>
+			
+				
+				
+	
 	<div id="register">
 		<form name="userRegistrationForm" action="controller" method="POST">
 			<input type="hidden" name="action" value="register"/>

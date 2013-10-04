@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import main.form.NewAuctionForm;
 import main.form.RegistrationForm;
 import main.form.SearchForm;
+import main.form.validator.FormError;
 import main.form.validator.NewAuctionFormValidator;
 import main.form.validator.RegistrationFormValidator;
 import main.model.AuctionManager;
@@ -111,13 +112,15 @@ public class AuctionController extends HttpServlet {
 		if (REGISTER.equals(request.getParameter(ACTION))) {
 			RegistrationForm form = setRegistrationForm(request);
 			
+			
 			if (form.getUsername().isEmpty() || form.getPassword().isEmpty() || form.getCreditCard().isEmpty() || form.getEmail().isEmpty()) {
 				System.out.println("A field that cannot be null is missing a value.");
 				request.getSession().setAttribute(FORM, form);
 				response.sendRedirect("register.jsp");
-			} else if (!RegistrationFormValidator.validate(form).isEmpty()) {
+			} else if (RegistrationFormValidator.validate(form).isEmpty()) {
 				// There are errors, put them in the register page and resend data.
 				request.getSession().setAttribute(FORM, form);
+				request.getSession().setAttribute("formErrors", RegistrationFormValidator.validate(form));
 				response.sendRedirect("register.jsp");
 				return;
 			} else {
@@ -314,7 +317,12 @@ public class AuctionController extends HttpServlet {
 		form.setPasswordConfirm(request.getParameter("passwordConfirm"));
 		form.setEmail(request.getParameter("email"));
 		form.setAddress(request.getParameter("address"));
-		form.setDob(Integer.parseInt(request.getParameter("dob")));
+		try {
+			form.setDob(Integer.parseInt(request.getParameter("dob")));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		form.setCreditCard(request.getParameter("creditCard"));
 		form.setIsAdmin(request.getParameter("admin").equals("yes"));
 		return form;

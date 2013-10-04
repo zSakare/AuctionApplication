@@ -1,6 +1,12 @@
 package main.form.validator;
 
-public class FormError {
+import java.io.Serializable;
+
+public class FormError implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3333054686701501293L;
 	private String fieldName;
 	private String value;
 	private String error;
