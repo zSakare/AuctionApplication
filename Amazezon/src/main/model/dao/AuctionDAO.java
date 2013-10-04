@@ -305,7 +305,6 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 	}
 	
 	public List<Auction> getAllAuctions() {
-		System.out.println("in function");
 		List<Auction> auctionsFound = new ArrayList<Auction>();
 		
 		Connection conn = null;
@@ -379,5 +378,31 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 
 		return auctionsFound;
 	}
-	
+
+	public void closeAuction(int auctionID) {
+		Connection conn = null;
+		String sql = "UPDATE Auctions SET ";
+
+		PreparedStatement pst = null;
+		try {
+			conn = getConnection();
+			pst = conn.prepareStatement(sql);
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

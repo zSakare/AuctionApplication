@@ -182,6 +182,7 @@ public class AuctionController extends HttpServlet {
 			auctionDAO.setAttributes(username, title, category, picture, description, postageDetails, reservePrice, biddingStartPrice, biddingIncrement, endTime);
 			try {
 				auctionDAO.doInsert();
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
