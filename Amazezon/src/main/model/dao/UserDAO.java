@@ -154,8 +154,6 @@ public class UserDAO extends JDBCDriver implements Serializable {
 	public void doInsert() throws SQLException {
 
 		Connection conn = null;
-
-
 		String sql = "INSERT INTO USERS (firstname,lastname,username,password,email,address,yearOfBirth,creditCard,confirmed, isAdmin) VALUES (?,?,?,?,?,?,?,?,?,?);";
 
 		PreparedStatement pst = null;
@@ -313,6 +311,35 @@ public class UserDAO extends JDBCDriver implements Serializable {
 	public void setLoggedIn(boolean loggedIn) {
 		this.loggedIn = loggedIn;
 		
+	}
+
+	public void setConfirmed(String username) throws SQLException {
+		Connection conn = null;
+		String sql = "UPDATE Users SET confirmed=? WHERE username=?";
+
+		PreparedStatement pst = null;
+		try {
+			conn = getConnection();
+			pst = conn.prepareStatement(sql);
+			pst.setBoolean(1, true);
+			pst.setString(2, username);
+			
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			throw new SQLException("Unable to insert user. SQLException: " + e);
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

@@ -1,16 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context debug="1" reloadable="true" crossContext="true">
-  <Resource auth="Container"
-            name="jdbc/postgres"
-            type="javax.sql.DataSource" 
-            driverClassName="org.postgresql.Driver"
-            url="jdbc:postgresql://127.0.0.1:5433/AuctionDB"
-            username="postgres"
-            password="postgres" 
-            maxActive="200" 
-            maxIdle="10" 
-            maxWait="5"
-            removeAbandoned="true"
-            removeAbandonedTimeout="1200"
-  />
 </Context>
