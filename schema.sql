@@ -9,6 +9,8 @@ create table Users (
    yearOfBirth int,
    creditCard  varchar(19) not null,
    confirmed   boolean default false,
+   isAdmin     boolean,
+   banned      boolean default false,
    primary key (userID)
 );
 

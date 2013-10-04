@@ -10,6 +10,7 @@ public class RegistrationForm {
 	private String address;
 	private Integer dob;
 	private String creditCard;
+	private boolean isAdmin;
 	
 	public String getUsername() {
 		return username;
@@ -44,6 +45,9 @@ public class RegistrationForm {
 	public String getEmail() {
 		return email;
 	}
+	public boolean getIsAdmin() {
+		return this.isAdmin;
+	}
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -64,5 +68,8 @@ public class RegistrationForm {
 	}
 	public void setCreditCard(String creditCard) {
 		this.creditCard = creditCard;
+	}
+	public void setIsAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 }

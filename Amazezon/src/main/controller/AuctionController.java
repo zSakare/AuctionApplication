@@ -21,6 +21,7 @@ import main.form.SearchForm;
 import main.form.validator.RegistrationFormValidator;
 import main.model.dao.AuctionDAO;
 import main.model.dao.UserDAO;
+import main.model.dao.Admin;
 import main.model.data.Auction;
 import main.model.data.AuctionList;
 
@@ -41,6 +42,9 @@ public class AuctionController extends HttpServlet {
 	private static final String LOGIN = "login";
 	private static final String ACTION = "action";
 	private static final String AUCTION = "createAuction";
+	private static final String BAN = "ban";
+	private static final String REMOVEAUCTION = "removeAuction";
+	private static final String HALTAUCTION = "haltAuction";
 	
 	final Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -141,9 +145,10 @@ public class AuctionController extends HttpServlet {
 				response.sendRedirect("register.jsp");
 				return;
 			} else {
-				
-				//request.getSession().setAttribute("newUser", newUser);
 				UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
+				
+				
+				
 				userBean.setAttributes(form.getUsername(), 
 										form.getPassword(), 
 										form.getEmail(), 
@@ -151,7 +156,8 @@ public class AuctionController extends HttpServlet {
 										form.getLastname(), 
 										form.getAddress(), 
 										form.getDob(), 
-										form.getCreditCard()); //same as what the constructor did before
+										form.getCreditCard(),
+										form.getIsAdmin()); //same as what the constructor did before
 				
 				System.out.println("first name: "+ userBean.getFirstName());
 				
@@ -204,6 +210,16 @@ public class AuctionController extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else if (BAN.equals(request.getParameter(ACTION))) {
+			Admin userBean = ((UserDAO) request.getSession().getAttribute("userBean")).loginAsAdmin(); // get the bean the user created
+			
+			String userToBan = request.getParameter("username");
+			if (userBean.getIsAdmin()) {
+				userBean.ban(userToBan);
+			}
+			request.getSession().setAttribute("userBean", (UserDAO)userBean);
+			response.sendRedirect("admin.jsp");
+			
 		}
 	}
 
@@ -223,6 +239,7 @@ public class AuctionController extends HttpServlet {
 		form.setAddress(request.getParameter("address"));
 		form.setDob(Integer.parseInt(request.getParameter("dob")));
 		form.setCreditCard(request.getParameter("creditCard"));
+		form.setIsAdmin(request.getParameter("admin").equals("yes"));
 		return form;
 	}
 	

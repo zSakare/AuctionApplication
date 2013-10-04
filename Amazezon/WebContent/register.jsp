@@ -65,6 +65,11 @@
 				<td><input type="text" name="creditCard" maxlength="19" value="${form.creditCard}"/></td>
 			</tr>
 			<tr>
+				<td>Admin</td>
+				<td>Yes<input type="radio" name="admin" value="yes" /><br />
+				No<input type="radio" name="admin" value="no" checked="checked"/>
+			</tr>
+			<tr>
 				<td><input type="submit" name="submitRegistration" value="Register"></td>
 			</tr>
 			</table>

@@ -9,14 +9,33 @@
 <title>Amazezon - Admin</title>
 </head>
 <body>
-
+	<p><c:out value="${userBean.messages}" /></p>
+	<jsp:setProperty name="userBean" property="messages" value="" />
 	<c:choose>
-		<c:when test="${userBean.loggedIn}">
+		<c:when test="${userBean.isAdmin}">
 			Hello <c:out value="${userBean.firstName}" />
-			<a href=http://localhost:8080/Amazezon/new-auction.jsp>Create a New Auction</a>
+			<h3>Halt an Auction</h3>
+			<form name="haltAuctionForm" action="controller" method="POST">
+			<input type="hidden" name="action" value="haltAuction" />
+			Auction Name: <input type="text" name="auctionName" maxlength="50" />
+			<input type="submit" name="haltAuctionSubmit" value="Halt Auction!" />
+			</form>
+			<h3>Remove an auction</h3>
+			<form name="removeAuctionForm" action="controller" method="POST">
+			<input type="hidden" name="action" value="removeAuction" />
+			Auction Name: <input type="text" name="auctionName" maxlength="50" />
+			<input type="submit" name="removeAuctionSubmit" value="Remove Auction!" />
+			</form>
+			<h3>Ban a user</h3>
+			<form name="banForm" action="controller" method="POST">
+			<input type="hidden" name="action" value="ban" />
+			Username: <input type="text" name="username" maxlength="50" />
+			<input type="submit" name="banSubmit" value="Ban!" />
+			</form>
+			
 		</c:when>
 		<c:otherwise>
-			<p>Sorry you're not logged in!</p>
+			<p>Sorry you're not an admin!</p>
 		</c:otherwise>
 		
 	</c:choose>
