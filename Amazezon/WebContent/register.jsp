@@ -12,16 +12,10 @@
 </head>
 <body>
 	<c:choose>
-		<c:when test="${userBean.errorInForm}">
-			<c:out value="A field that cannot be empty is missing a value." />
+		<c:when test="${userBean.loggedIn}">
+			<c:out value="You're logged in! sure you didn't mean to go to <a href='auction.jsp'>Auctions</a>" />
 		</c:when>
-		<c:otherwise>
-			<%
-				if (!userBean.getErrorInForm()) {
-					userBean.logOut();	
-				}
-			%>	
-		</c:otherwise>
+		
 	</c:choose>
 	
 	<div id="register">
