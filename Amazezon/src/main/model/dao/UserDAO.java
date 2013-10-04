@@ -306,7 +306,35 @@ public class UserDAO extends JDBCDriver implements Serializable {
 	}
 	public void setMessages(String messages) {
 		this.messages = messages;
+		Connection conn = null;
+		String sql = "UPDATE Users SET messages=? WHERE username=?";
+
+		PreparedStatement pst = null;
+		try {
+			conn = getConnection();
+			pst = conn.prepareStatement(sql);
+			pst.setString(1, messages);
+			pst.setString(2, username);
+			
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
+	
+	
 	
 	public void setLoggedIn(boolean loggedIn) {
 		this.loggedIn = loggedIn;

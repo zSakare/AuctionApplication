@@ -13,7 +13,9 @@
 <body>
 	<c:choose>
 		<c:when test="${userBean.loggedIn}">
+
 			You're logged in! Are you sure you didn't mean to go to <a href='auction.jsp'>Auctions?</a>
+
 		</c:when>
 		<c:otherwise>
 			<div id="register">

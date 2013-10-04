@@ -48,6 +48,7 @@ public class AuctionController extends HttpServlet {
 	private static final String BAN = "ban";
 	private static final String REMOVEAUCTION = "removeAuction";
 	private static final String HALTAUCTION = "haltAuction";
+	private static final String VIEWAUCTION = "viewAuction";
 	
 	final Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -215,6 +216,18 @@ public class AuctionController extends HttpServlet {
 			request.getSession().setAttribute("userBean", (UserDAO)userBean);
 			
 			response.sendRedirect("admin.jsp");
+		} else if (VIEWAUCTION.equals(request.getParameter(ACTION))) { 
+			String id = request.getParameter("auctionID");
+			AuctionDAO auctionDAO = new AuctionDAO();
+			
+			try {
+				Auction auctionBean = auctionDAO.getAuctionWithID(Integer.parseInt(id));
+				request.getSession().setAttribute("auctionBean", auctionBean);
+				response.sendRedirect("viewauction.jsp");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 		} else {
 			try {
 				List<FileItem> items = new ServletFileUpload(
