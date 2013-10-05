@@ -22,7 +22,7 @@
 	<!--  
 	<c:out value="${auctionBean.startingPrice}" /><br />
 	<c:out value="${auctionBean.bidIncrements}" /><br />-->
-	Bid Closes at <c:out value="${auctionBean.closingTime}" /><br />
+	Bid Closes at <c:out value="${auctionBean.endDate}" /><br />
 	<c:if test="${userBean.isAdmin}">
 		
 		<form name="haltAuctionForm" action="controller" method="POST">

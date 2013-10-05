@@ -1,6 +1,7 @@
 package main.model.data;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,7 +14,6 @@ public class Auction implements Serializable {
 	private static final long serialVersionUID = 7097444102553414751L;
 	private int auctionID;
 	private User owner;
-	private String itemName;
 	private String title;
 	private String picture;
 	private String description;
@@ -25,6 +25,7 @@ public class Auction implements Serializable {
 	private List<Bid> bids;
 	private String category;
 	private boolean closed;
+	private Date startTime;
 	
 	// Getters and setters:
 	public int getAuctionID() {
@@ -38,12 +39,6 @@ public class Auction implements Serializable {
 	}
 	public void setOwner(User owner) {
 		this.owner = owner;
-	}
-	public String getItemName() {
-		return itemName;
-	}
-	public void setItemName(String itemName) {
-		this.itemName = itemName;
 	}
 	public String getPicture() {
 		System.out.println("get picture was called");
@@ -111,5 +106,14 @@ public class Auction implements Serializable {
 	}
 	public void setClosed(boolean closed) {
 		this.closed = closed;
+	}
+	public Date getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+	public Date getEndDate() {
+		return this.startTime = new Date(this.startTime.getTime() + (this.closingTime*1000*60));
 	}
 }
