@@ -20,30 +20,9 @@
 			Hello <c:out value="${userBean.firstName}" />
 			
 			
-			<% 
-				AuctionDAO auctionDAO = new AuctionDAO();
-			    List<Auction> allAuctions = auctionDAO.getAllAuctions();
-				request.getSession().setAttribute("allAuctions", allAuctions);
-			%>
 			
-			<c:if test="${!empty allAuctions}">
-				<c:forEach var="auction" items="${allAuctions}">
-				<table>
-					<tr>
-						<td><b>ID</b></td><td> ${auction.auctionID} </td>
-					</tr>
-					<tr>
-						<td> <b>Title</b> </td><td>${auction.title} </td>
-					</tr>
-					<tr>
-						<td><b>End Time</b></td><td> ${auction.closingTime} </td>
-					</tr>
-					<tr>
-						<td><b>Image</b></td><td> <img src="data:image/jpg;base64,<c:out value='${auction.picture}'/>" /></td>
-					</tr>
-					</table>
-				</c:forEach>
-			</c:if>
+			
+			
 			
 			<h3>Ban a user</h3>
 			<form name="banForm" action="controller" method="POST">

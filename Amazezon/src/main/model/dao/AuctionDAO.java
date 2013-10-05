@@ -33,7 +33,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 	public void setAttributes(String ownerUsername, String title, String category,
 			String picture, String description, String postage,
 			float reservePrice, float biddingStartPrice,
-			float biddingIncrement, int endTime) {
+			float biddingIncrement, String endTime) {
 		this.ownerUsername = ownerUsername;
 		
 		this.title = title;
@@ -44,7 +44,12 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 		this.reservePrice = reservePrice;
 		this.biddingStartPrice = biddingStartPrice;
 		this.biddingIncrement = biddingIncrement;
-		this.endTime = endTime;
+		if (!endTime.isEmpty()) {
+			this.endTime = Integer.parseInt(endTime);
+		} else {
+			this.endTime = 10;
+		}
+		
 
 	}
 

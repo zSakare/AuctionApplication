@@ -7,10 +7,10 @@ public class NewAuctionForm {
 	private String picture;
 	private String description;
 	private String postageDetails;
-	private Float reservePrice;
-	private Float biddingStartPrice;
-	private Float biddingIncrement;
-	private int endTime;
+	private String reservePrice;
+	private String biddingStartPrice;
+	private String biddingIncrement;
+	private String endTime;
 	
 	public String getTitle() {
 		return title;
@@ -52,35 +52,35 @@ public class NewAuctionForm {
 		this.postageDetails = postageDetails;
 	}
 
-	public Float getReservePrice() {
+	public String getReservePrice() {
 		return reservePrice;
 	}
 
-	public void setReservePrice(Float reservePrice) {
+	public void setReservePrice(String reservePrice) {
 		this.reservePrice = reservePrice;
 	}
 
-	public Float getBiddingStartPrice() {
+	public String getBiddingStartPrice() {
 		return biddingStartPrice;
 	}
 
-	public void setBiddingStartPrice(Float biddingStartPrice) {
+	public void setBiddingStartPrice(String biddingStartPrice) {
 		this.biddingStartPrice = biddingStartPrice;
 	}
 
-	public Float getBiddingIncrement() {
+	public String getBiddingIncrement() {
 		return biddingIncrement;
 	}
 
-	public void setBiddingIncrement(Float biddingIncrement) {
+	public void setBiddingIncrement(String biddingIncrement) {
 		this.biddingIncrement = biddingIncrement;
 	}
 
-	public Integer getEndTime() {
+	public String getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(int endTime) {
+	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
 

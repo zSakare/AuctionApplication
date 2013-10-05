@@ -55,11 +55,14 @@ public class RegistrationFormValidator {
 				errors.add(new FormError("dob", form.getDob().toString(), "Date of birth <" + form.getDob() + "> cannot exceed current year"));
 			}
 		}
-		Pattern addressPattern = Pattern.compile(ADDRESS_PATTERN);
-		Matcher addressMatcher = addressPattern.matcher(form.getAddress());
-		// Check address does not have malicious characters.
-		if (!addressMatcher.matches()) {
-			errors.add(new FormError("address", form.getAddress(), "Address <" + form.getAddress() + "> has invalid characters. All characters must be alphanumeric"));
+		
+		if (form.getAddress() != null) {
+			Pattern addressPattern = Pattern.compile(ADDRESS_PATTERN);
+			Matcher addressMatcher = addressPattern.matcher(form.getAddress());
+			// Check address does not have malicious characters.
+			if (!addressMatcher.matches()) {
+				errors.add(new FormError("address", form.getAddress(), "Address <" + form.getAddress() + "> has invalid characters. All characters must be alphanumeric"));
+			}
 		}
 		
 		return errors;

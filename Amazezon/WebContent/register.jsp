@@ -22,8 +22,11 @@
 		<c:forEach var="formError" items="${formErrors}">
 			<c:out value="${formError.error}"/><br>
 		</c:forEach>
+		<c:set var="formErrors" scope="session"/>
 	</c:if>
-			
+	
+	
+	
 				
 				
 	

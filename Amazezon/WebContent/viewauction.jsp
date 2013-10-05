@@ -12,10 +12,15 @@
 </head>
 <body>
 <c:if test="${auctionBean.title ne ''}">
-	<img src="data:image/jpg;base64,<c:out value='${auctionBean.picture}'/>" />
+
+	<c:if test="${auctionBean.picture ne ''}">
+		<img src="data:image/jpg;base64,<c:out value='${auctionBean.picture}'/>" />
+	</c:if>
 	<h1><c:out value="${auctionBean.title}" /></h1>
-	<h2>Description</h2>
-	<c:out value="${auctionBean.description}" />
+	<c:if test="${auctionBean.description ne ''}">
+		<h2>Description</h2>
+		<c:out value="${auctionBean.description}" />
+	</c:if>
 	<h2>Postage</h2>
 	<c:out value="${auctionBean.postageDetails}" />
 	<h2>Current Bid</h2>

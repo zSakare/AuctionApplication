@@ -25,6 +25,7 @@ import main.model.data.Auction;
 import main.model.data.AuctionList;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -112,12 +113,12 @@ public class AuctionController extends HttpServlet {
 		if (REGISTER.equals(request.getParameter(ACTION))) {
 			RegistrationForm form = setRegistrationForm(request);
 			System.out.println("registered");
-			
-			if (!RegistrationFormValidator.validate(form).isEmpty()) {
+			List<FormError> formErrors = RegistrationFormValidator.validate(form); 
+			if (!formErrors.isEmpty()) {
 				System.out.println("errors in form");
 				// There are errors, put them in the register page and resend data.
 				request.getSession().setAttribute(FORM, form);
-				request.getSession().setAttribute("formErrors", RegistrationFormValidator.validate(form));
+				request.getSession().setAttribute("formErrors", formErrors);
 				response.sendRedirect("register.jsp");
 				return;
 			} else {
@@ -234,16 +235,18 @@ public class AuctionController extends HttpServlet {
 			try {
 				List<FileItem> items = new ServletFileUpload(
 					    new DiskFileItemFactory()).parseRequest(request);
-				String string1 = new String(items.get(0).get());
-				if (string1.equals(AUCTION)) {
+				String action = new String(items.get(0).get());
+				if (action.equals(AUCTION)) {
 					//TODO: check correct fields are here
-					String action = new String(items.get(0).get());
+					
 					
 					UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
 					String username = userBean.getUsername();
 					
 					NewAuctionForm form = setNewAuctionForm(request, items);
-					if (NewAuctionFormValidator.validate(form).isEmpty()) {
+					List<FormError> formErrors = NewAuctionFormValidator.validate(form);
+					
+					if (formErrors.isEmpty()) {
 						AuctionDAO auctionDAO = new AuctionDAO();
 						auctionDAO.setAttributes(username, 
 												form.getTitle(), 
@@ -251,9 +254,9 @@ public class AuctionController extends HttpServlet {
 												form.getPicture(), 
 												form.getDescription(), 
 												form.getPostageDetails(), 
-												form.getReservePrice(), 
-												form.getBiddingStartPrice(), 
-												form.getBiddingIncrement(), 
+												Float.parseFloat(form.getReservePrice()), 
+												Float.parseFloat(form.getBiddingStartPrice()), 
+												Float.parseFloat(form.getBiddingIncrement()), 
 												form.getEndTime());
 						
 						try {
@@ -261,21 +264,23 @@ public class AuctionController extends HttpServlet {
 							
 							Auction auction = new Auction();
 							auction.setAuctionID(auctionDAO.getAuctionID());
-							auction.setClosingTime(Integer.parseInt(new String(items.get(9).get())));
+							auction.setClosingTime(auctionDAO.getEndTime());
 							
 							AuctionManager.shutDownAuction(auction);
 							
 							response.sendRedirect("auction.jsp");
 						} catch (Exception e) {
+							e.printStackTrace();
 							System.out.println("Failed to add new auction");
 							response.sendRedirect("auction.jsp");
 						}
 					} else {
+						request.getSession().setAttribute("formErrors", formErrors);
 						request.getSession().setAttribute("newAuctionForm", form);
 						response.sendRedirect("new-auction.jsp");
 					}
 				}
-			} catch (Exception e) {
+			} catch (FileUploadException e) {
 				System.out.println("Failed to receive form input");
 				response.sendRedirect("new-auction.jsp");
 			}
@@ -288,17 +293,19 @@ public class AuctionController extends HttpServlet {
 		if (form == null) {
 			form = new NewAuctionForm();
 		}
-		
-		form.setTitle(new String(items.get(1).get()));
-		form.setCategory(new String(items.get(2).get()));
+		for (FileItem f : items) {
+			System.out.println(f.getFieldName());
+		}
+		form.setTitle(items.get(1).getString());
+		form.setCategory(items.get(2).getString());
 		form.setPicture(new Base64().encodeToString(items.get(3).get()));
-		form.setDescription(new String(items.get(4).get()));
-		form.setPostageDetails(new String(items.get(5).get()));
-		form.setPostageDetails(new String(items.get(5).get()));
-		form.setReservePrice(Float.parseFloat(new String(items.get(6).get())));
-		form.setBiddingStartPrice(Float.parseFloat(new String(items.get(7).get())));
-		form.setBiddingIncrement(Float.parseFloat(new String(items.get(8).get())));
-		form.setEndTime(Integer.parseInt(new String(items.get(9).get())));
+		form.setDescription(items.get(4).getString());
+		form.setPostageDetails(items.get(5).getString());
+		form.setPostageDetails(items.get(5).getString());
+		form.setReservePrice(items.get(6).getString());
+		form.setBiddingStartPrice(items.get(7).getString());
+		form.setBiddingIncrement(items.get(8).getString());
+		form.setEndTime(items.get(9).getString());
 		return form;
 	}
 
