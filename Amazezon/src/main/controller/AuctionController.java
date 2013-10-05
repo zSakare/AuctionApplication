@@ -212,7 +212,9 @@ public class AuctionController extends HttpServlet {
 						.getParameter("auctionid"));
 				if (userBean != null) { // if it is not null, it has
 										// successfully been logged in as admin
-					userBean.haltAuction(auctionid);
+					int creatorID = userBean.haltAuction(auctionid);
+					String message = "Your auction for " + request.getParameter("title") + " has been halted by an administrator";
+					userBean.addHaltMessage(creatorID, message);
 				}
 			} catch (Exception e) {
 				userBean.setMessages(request.getParameter("auctionid")

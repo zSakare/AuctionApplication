@@ -110,8 +110,10 @@ public class Admin extends UserDAO{
 		}
 		
 	}
-	public void haltAuction(int auction) {
-		String sql = "UPDATE auctions SET halted=true WHERE auctionID=?;";
+	
+	public int haltAuction(int auction) {
+		Integer creatorID = null;
+		String sql = "UPDATE auctions SET halted=true WHERE auctionID=? RETURNING creator;";
 		boolean success = true;
 		PreparedStatement pst = null;
 		Connection conn = null;
@@ -119,12 +121,13 @@ public class Admin extends UserDAO{
 			conn = getConnection();
 
 			pst = conn.prepareStatement(sql);
-
-			// ResultSet rs = st.executeQuery("SELECT VERSION()");
-
+			
 			pst.setInt(1, auction);
 			 
-			pst.executeUpdate();
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				creatorID = rs.getInt("creator");
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -148,6 +151,7 @@ public class Admin extends UserDAO{
 				this.setMessages("Something went wrong");
 			}
 		}
+		return creatorID;
 	}
 	
 	
@@ -191,5 +195,43 @@ public class Admin extends UserDAO{
 			}
 		}
 		
+	}
+
+	public void addHaltMessage(int creatorID, String message) {
+		String sql = "UPDATE users SET messages=? WHERE userid=?;";
+		boolean success = true;
+		PreparedStatement pst = null;
+		Connection conn = null;
+		try {
+			conn = getConnection();
+
+			pst = conn.prepareStatement(sql);
+
+			pst.setString(1, message);
+			pst.setInt(2, creatorID);
+			
+			pst.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			success = false;
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				success = false;
+			}
+			if (success) {
+				this.setMessages("Notified user of halted auction.");
+			} else {
+				this.setMessages("Something went wrong");
+			}
+		}
 	}
 }

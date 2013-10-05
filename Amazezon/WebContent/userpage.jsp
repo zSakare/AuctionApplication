@@ -19,7 +19,7 @@
 		}
 	</style>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Amazezon - Profile</title>
 </head>
 <body>
 	<ul class="horizontal">
@@ -28,14 +28,15 @@
 	    <li><a href="auction.jsp">Auction List</a></li>
 	    <li><a href="new-auction.jsp">New Auction</a></li>
 	    <li><a href="admin.jsp">Admin</a></li>
+	    <li><a href="userpage.jsp">Profile</a></li>
 	</ul>
 	<br>
 	<c:choose>
 		<c:when test="${userBean.loggedIn}">
 			Hello <c:out value="${userBean.firstName}" />
 			<a href=new-auction.jsp>Create a New Auction</a>
+			<br>
 			<c:out value="${userBean.messages}" />
-			<jsp:setProperty name="userBean" property="messages" value=""/>
 		</c:when>
 		<c:otherwise>
 			Sorry you're not logged in!

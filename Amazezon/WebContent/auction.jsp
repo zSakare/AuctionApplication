@@ -30,6 +30,7 @@
 	    <li><a href="auction.jsp">Auction List</a></li>
 	    <li><a href="new-auction.jsp">New Auction</a></li>
 	    <li><a href="admin.jsp">Admin</a></li>
+	    <li><a href="userpage.jsp">Profile</a></li>
 	</ul>
 	<br>
 	<div id="search">
