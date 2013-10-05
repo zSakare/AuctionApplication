@@ -20,6 +20,7 @@ import main.form.validator.RegistrationFormValidator;
 import main.model.AuctionManager;
 import main.model.dao.Admin;
 import main.model.dao.AuctionDAO;
+import main.model.dao.BidDAO;
 import main.model.dao.UserDAO;
 import main.model.data.Auction;
 import main.model.data.AuctionList;
@@ -254,7 +255,13 @@ public class AuctionController extends HttpServlet {
 			}
 
 		} else if (BID.equals(request.getParameter(ACTION))) {
-			request.getSession().getAttribute("auctionBean");
+			request.getSession().getAttribute("bidAmount");
+			AuctionDAO auctionDAO = (AuctionDAO)request.getSession().getAttribute("auctionBean");
+			BidDAO bidDAO = new BidDAO();
+			
+			
+			//bidDAO.setAttributes(auctionDAO.getAuctionID(), bidTime, bidPrice);
+			
 		} else {
 			try {
 				List<FileItem> items = new ServletFileUpload(

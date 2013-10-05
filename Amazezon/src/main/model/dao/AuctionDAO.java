@@ -137,6 +137,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 	}
 	
 	public void setClosed(boolean closed) {
+		
 		this.closed = closed;
 	}
 	
