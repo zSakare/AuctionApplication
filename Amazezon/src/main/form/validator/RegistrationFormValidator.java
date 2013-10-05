@@ -14,19 +14,38 @@ public class RegistrationFormValidator {
 	private static final String ADDRESS_PATTERN = "^[A-Z0-9a-z ]+$";
 	
 	public static List<FormError> validate(RegistrationForm form) {
-		
 		List<FormError> errors = new ArrayList<FormError>();
-		
-		// Check if passwords are equal.
-		if (!form.getPassword().equals(form.getPasswordConfirm())) {
-			errors.add(new FormError("passwordConfirm", form.getPasswordConfirm(), "Confirm password must match password"));
+		if (form.getUsername().isEmpty()) {
+			errors.add(new FormError("username", form.getUsername(), "Username field is empty"));
+		} else {
+			//check the username doesnt exist
 		}
 		
-		Pattern emailPattern = Pattern.compile(EMAIL_PATTERN, Pattern.CASE_INSENSITIVE);
-		Matcher emailMatcher = emailPattern.matcher(form.getEmail());
-		// Check if valid email sequence is given
-		if (!emailMatcher.matches()) {
-			errors.add(new FormError("email", form.getEmail(), "Invalid email address"));
+		if (form.getCreditCard().isEmpty()) {
+			errors.add(new FormError("creditCard", form.getCreditCard(), "Credit card field is empty"));
+		}
+				
+				
+				
+		
+		
+		if (form.getPassword().isEmpty()) {
+			errors.add(new FormError("password", form.getPassword(), "Password field is empty"));
+		} else {
+			 // Check if passwords are equal.
+			if (!form.getPassword().equals(form.getPasswordConfirm())) {
+				errors.add(new FormError("passwordConfirm", form.getPasswordConfirm(), "Confirm password must match password"));
+			}
+		}
+		if (form.getEmail().isEmpty()) {
+			errors.add(new FormError("email", form.getEmail(), "Email field is empty"));
+		} else {
+			Pattern emailPattern = Pattern.compile(EMAIL_PATTERN, Pattern.CASE_INSENSITIVE);
+			Matcher emailMatcher = emailPattern.matcher(form.getEmail());
+			// Check if valid email sequence is given
+			if (!emailMatcher.matches()) {
+				errors.add(new FormError("email", form.getEmail(), "Invalid email address"));
+			}
 		}
 		
 		int year = Calendar.getInstance().get(Calendar.YEAR);

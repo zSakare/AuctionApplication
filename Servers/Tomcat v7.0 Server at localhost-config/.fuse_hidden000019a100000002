@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   Licensed to the Apache Software Foundation (ASF) under one or more
   contributor license agreements.  See the NOTICE file distributed with
@@ -14,9 +14,7 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
--->
-<!-- The contents of this file will be loaded for each web application -->
-<Context>
+--><!-- The contents of this file will be loaded for each web application --><Context>
 
     <!-- Default set of monitored resources -->
     <WatchedResource>WEB-INF/web.xml</WatchedResource>
@@ -31,12 +29,21 @@
     <!--
     <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
     -->
-	<Resource name="mail/Session" auth="Container"
-           type="javax.mail.Session"
-           mail.smtp.host="smtp.gmail.com"
-           mail.smtp.auth="true"
-           mail.smtp.user="9321group29@gmail.com"
-           mail.smtp.password="randompass1"
-           mail.smtp.starttls.enable="true"
-           />
+
+  	<Resource name="mail/MailSession" auth="Container"
+                
+				auth="Container"
+				type="javax.mail.Session"
+				mail.imap.host="localhost"
+				mail.pop.host="localhost"
+				mail.store.protocol="imap"
+				mail.transport.protocol="smtp"
+				mail.smtp.host="smtp.gmail.com"
+				mail.smtp.port="465"
+				mail.smtp.auth="true"
+				mail.smtp.starttls.enable="true"
+				mail.smtp.user="9321group29@gmail.com"
+				password="randompass1"
+				mail.smtp.socketFactory.class="javax.net.ssl.SSLSocketFactory"
+    />
 </Context>

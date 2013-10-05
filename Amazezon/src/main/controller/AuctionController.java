@@ -111,19 +111,17 @@ public class AuctionController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (REGISTER.equals(request.getParameter(ACTION))) {
 			RegistrationForm form = setRegistrationForm(request);
+			System.out.println("registered");
 			
-			
-			if (form.getUsername().isEmpty() || form.getPassword().isEmpty() || form.getCreditCard().isEmpty() || form.getEmail().isEmpty()) {
-				System.out.println("A field that cannot be null is missing a value.");
-				request.getSession().setAttribute(FORM, form);
-				response.sendRedirect("register.jsp");
-			} else if (RegistrationFormValidator.validate(form).isEmpty()) {
+			if (!RegistrationFormValidator.validate(form).isEmpty()) {
+				System.out.println("errors in form");
 				// There are errors, put them in the register page and resend data.
 				request.getSession().setAttribute(FORM, form);
 				request.getSession().setAttribute("formErrors", RegistrationFormValidator.validate(form));
 				response.sendRedirect("register.jsp");
 				return;
 			} else {
+				System.out.println("no errors");
 				UserDAO userBean = (UserDAO) request.getSession().getAttribute("userBean"); // get the bean the user created
 				
 				
@@ -156,6 +154,7 @@ public class AuctionController extends HttpServlet {
 						response.sendRedirect("auction.jsp");
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
 					response.sendRedirect("error.jsp");
 				}
 				

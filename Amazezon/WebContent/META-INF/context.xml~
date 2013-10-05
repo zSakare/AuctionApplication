@@ -32,11 +32,19 @@
     <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
     -->
 	<Resource name="mail/Session" auth="Container"
-           type="javax.mail.Session"
-           mail.smtp.host="smtp.gmail.com"
-           mail.smtp.auth="true"
-           mail.smtp.user="9321group29@gmail.com"
-           mail.smtp.password="randompass1"
-           mail.smtp.starttls.enable="true"
-           />
+                name="mail/MailSession"
+				auth="Container"
+				type="javax.mail.Session"
+				mail.imap.host="localhost"
+				mail.pop.host="localhost"
+				mail.store.protocol="imap"
+				mail.transport.protocol="smtp"
+				mail.smtp.host="smtp.gmail.com"
+				mail.smtp.port="465"
+				mail.smtp.auth="true"
+				mail.smtp.starttls.enable="true"
+				mail.smtp.user="9321group29@gmail.com"
+				password="randompass1"
+				mail.smtp.socketFactory.class="javax.net.ssl.SSLSocketFactory"
+    />
 </Context>
