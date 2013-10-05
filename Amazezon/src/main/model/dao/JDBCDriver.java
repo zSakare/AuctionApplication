@@ -26,7 +26,7 @@ public abstract class JDBCDriver {
 	    	
 	    	if (ds != null && cxt != null) {
 	    		try {
-	                Class.forName("org.postgresql.Driver");
+	                Class.forName(DRIVER);
 	            }
 	            catch (java.lang.ClassNotFoundException e) {
 	                java.lang.System.err.print("ClassNotFoundException: Postgres Server JDBC");
@@ -35,7 +35,7 @@ public abstract class JDBCDriver {
 	            }
 	    		
 	    		try {
-	    			conn = DriverManager.getConnection("jdbc:postgresql://localhost:5923/AuctionDB","auctionadmin","admin");
+	    			conn = DriverManager.getConnection(CONNECTION, DB_USER, DB_PASSWORD);
 	    			
 	    			System.out.println("Connected");
 	    		} catch (SQLException E) {
