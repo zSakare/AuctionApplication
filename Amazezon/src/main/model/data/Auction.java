@@ -114,6 +114,6 @@ public class Auction implements Serializable {
 		this.startTime = startTime;
 	}
 	public Date getEndDate() {
-		return this.startTime = new Date(this.startTime.getTime() + (this.closingTime*1000*60));
+		return new Date(this.startTime.getTime() + (this.closingTime*1000*60));
 	}
 }

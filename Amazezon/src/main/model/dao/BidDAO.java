@@ -29,7 +29,7 @@ public class BidDAO extends JDBCDriver implements Serializable {
 	public void doInsert() throws SQLException {
 		Connection conn = null;
 
-		String sql = "INSERT INTO USERS (auction,bidTime,bidPrice) VALUES (?,?,?);";
+		String sql = "INSERT INTO Bids (auction,bidTime,bidPrice) VALUES (?,?,?);";
 
 		PreparedStatement pst = null;
 		try {
@@ -43,7 +43,7 @@ public class BidDAO extends JDBCDriver implements Serializable {
 			
 			pst.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException("Unable to insert user. SQLException: " + e);
+			throw new SQLException("Unable to insert bid. SQLException: " + e);
 		} finally {
 			try {
 				if (pst != null) {

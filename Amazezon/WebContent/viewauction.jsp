@@ -27,7 +27,16 @@
 	<!--  
 	<c:out value="${auctionBean.startingPrice}" /><br />
 	<c:out value="${auctionBean.bidIncrements}" /><br />-->
-	Bid Closes at <c:out value="${auctionBean.endDate}" /><br />
+	<c:choose>
+		<c:when test="${auctionBean.closed}">
+			Auction ended at  <c:out value="${auctionBean.endDate}" /> <br />
+		</c:when>
+		<c:otherwise>
+			Auction closes at <c:out value="${auctionBean.endDate}" /><br />
+		</c:otherwise>
+		
+	</c:choose>
+	
 	<c:if test="${userBean.isAdmin}">
 		
 		<form name="haltAuctionForm" action="controller" method="POST">
@@ -41,6 +50,13 @@
 		<input type="hidden" name="action" value="removeAuction" />
 		<input type="hidden" name="auctionid" maxlength="50" value="${auctionBean.auctionID}"/>
 		<input type="submit" name="removeAuctionSubmit" value="Remove This Auction!" />
+		</form>
+	</c:if>
+	<c:if test="${userBean.loggedIn && not userBean.isAdmin && not auctionBean.closed}">
+		<form name="bidForm" action="controller" method="POST">
+			<input type="hidden" name="action" value="bid" />
+			<input type="text" name="bidAmount" />
+			<input type="submit" name="submitBid" value="Submit Bid" />
 		</form>
 	</c:if>
 </c:if>	

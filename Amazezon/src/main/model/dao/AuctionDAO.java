@@ -29,6 +29,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 	private float biddingIncrement;
 	private int endTime;
 	private float startTime;
+	private boolean closed;
 
 	public void setAttributes(String ownerUsername, String title, String category,
 			String picture, String description, String postage,
@@ -49,6 +50,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 		} else {
 			this.endTime = 10;
 		}
+		this.closed = false;
 		
 
 	}
@@ -127,7 +129,17 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 	public String getPostage() {
 		return postage;
 	}
-
+	
+	public boolean getClosed() {
+		
+		
+		return closed;
+	}
+	
+	public void setClosed(boolean closed) {
+		this.closed = closed;
+	}
+	
 	public float getReservePrice() {
 		return reservePrice;
 	}
@@ -491,6 +503,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 				e.printStackTrace();
 			}
 		}
+		this.closed = true;
 	}
 
 	public Integer getAuctionID() {
@@ -539,4 +552,6 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 	public void setStartTime(float startTime) {
 		this.startTime = startTime;
 	}
+	
+	
 }
