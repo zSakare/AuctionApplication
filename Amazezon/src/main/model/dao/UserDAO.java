@@ -386,4 +386,38 @@ public class UserDAO extends JDBCDriver implements Serializable {
 		}
 	}
 
+	public String findUserEmail(int userID) throws SQLException {
+		String email = null;
+		Connection conn = null;
+		String sql = "SELECT email FROM Users WHERE userid=?";
+
+		PreparedStatement pst = null;
+		try {
+			conn = getConnection();
+			pst = conn.prepareStatement(sql);
+			
+			pst.setInt(1, userID);
+			
+			ResultSet rs = pst.executeQuery();
+			if (rs != null) {
+				rs.next();
+				email = rs.getString("email");
+			}
+		} catch (SQLException e) {
+			throw new SQLException("Unable to insert user. SQLException: " + e);
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return email;
+	}
 }

@@ -88,7 +88,82 @@ public class BidDAO extends JDBCDriver implements Serializable {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public float getHighestBid(int auctionID) throws SQLException {
+		Float bidPrice = null;
+		Connection conn = null;
 
+		String sql = "SELECT bidPrice FROM Bids b JOIN User_has_Bids ub ON b.bidID=ub.bid JOIN Users u ON ub.bidder=u.userid WHERE auction=? GROUP BY bidPrice, userid ORDER BY bidPrice DESC LIMIT 1";
+		
+		PreparedStatement pst = null;
+		
+		try {
+			conn = getConnection();
+
+			pst = conn.prepareStatement(sql);
+			
+			pst.setInt(1, auctionID);
+			
+			ResultSet rs = pst.executeQuery();
+			if (rs != null) {
+				rs.next();
+				bidPrice = rs.getFloat("bidPrice");
+			}
+		} catch (SQLException e) {
+			throw new SQLException("Unable to get max bidder. SQLException: " + e);
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return bidPrice;
+	}
+	
+	public int getHighestBidder(int auctionID) throws SQLException {
+		Integer userid = null;
+		Connection conn = null;
+
+		String sql = "SELECT userid FROM Bids b JOIN User_has_Bids ub ON b.bidID=ub.bid JOIN Users u ON ub.bidder=u.userid WHERE auction=? GROUP BY bidPrice, userid ORDER BY bidPrice DESC LIMIT 1";
+		
+		PreparedStatement pst = null;
+		
+		try {
+			conn = getConnection();
+
+			pst = conn.prepareStatement(sql);
+			
+			pst.setInt(1, auctionID);
+			
+			ResultSet rs = pst.executeQuery();
+			if (rs != null) {
+				rs.next();
+				userid = rs.getInt("userid");
+			}
+		} catch (SQLException e) {
+			throw new SQLException("Unable to get max bid. SQLException: " + e);
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return userid;
 	}
 	
 	public int getAuction() {
