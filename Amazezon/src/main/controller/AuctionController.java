@@ -274,7 +274,6 @@ public class AuctionController extends HttpServlet {
 			try {
 				bidDAO.doInsert();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -284,8 +283,6 @@ public class AuctionController extends HttpServlet {
 						new DiskFileItemFactory()).parseRequest(request);
 				String action = new String(items.get(0).get());
 				if (action.equals(AUCTION)) {
-					// TODO: check correct fields are here
-
 					UserDAO userBean = (UserDAO) request.getSession()
 							.getAttribute("userBean"); // get the bean the user
 														// created
