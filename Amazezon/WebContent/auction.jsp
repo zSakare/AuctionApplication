@@ -8,12 +8,30 @@
 <jsp:useBean id="auction" class="main.model.data.Auction" scope="session"/>
 <html>
 <head>
-
+	<style type="text/css">
+	    ul.horizontal {
+			margin:0;
+			padding:0;
+		}
+		
+		ul.horizontal li {
+			display:block;
+			float:left;
+			padding:0 10px;
+		}
+	</style>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Amazezon - Auctions</title>
 </head>
 <body>
-	<a href='new-auction.jsp'>Create New Auction</a>
+	<ul class="horizontal">
+	    <li><a href="register.jsp">Register</a></li>
+	    <li><a href="login.jsp">Login</a></li>
+	    <li><a href="auction.jsp">Auction List</a></li>
+	    <li><a href="new-auction.jsp">New Auction</a></li>
+	    <li><a href="admin.jsp">Admin</a></li>
+	</ul>
+	<br>
 	<div id="search">
 		<form name="auctionSearchForm" action="controller" method="GET">
 			<input type="hidden" name="action" value="auctionSearch"/>
