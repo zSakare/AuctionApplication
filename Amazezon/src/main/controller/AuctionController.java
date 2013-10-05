@@ -2,6 +2,7 @@ package main.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import main.form.NewAuctionForm;
 import main.form.RegistrationForm;
 import main.form.SearchForm;
+import main.form.validator.BidValidator;
 import main.form.validator.FormError;
 import main.form.validator.NewAuctionFormValidator;
 import main.form.validator.RegistrationFormValidator;
@@ -255,12 +257,24 @@ public class AuctionController extends HttpServlet {
 			}
 
 		} else if (BID.equals(request.getParameter(ACTION))) {
-			request.getSession().getAttribute("bidAmount");
-			AuctionDAO auctionDAO = (AuctionDAO)request.getSession().getAttribute("auctionBean");
+			
+			Auction auctionDAO = (Auction)request.getSession().getAttribute("auctionBean");
+			UserDAO userDAO = (UserDAO)request.getSession().getAttribute("userBean");
 			BidDAO bidDAO = new BidDAO();
 			
+			Date currentDate = new Date();
+			int bidAmount =  Integer.parseInt(request.getParameter("bidAmount"));
+			int bidder = userDAO.getUserID();
+			BidValidator bidValidator = new BidValidator();
+			bidValidator.validateBid(auctionDAO.getAuctionID(),bidAmount);
 			
-			//bidDAO.setAttributes(auctionDAO.getAuctionID(), bidTime, bidPrice);
+			bidDAO.setAttributes(auctionDAO.getAuctionID(), currentDate,bidAmount, bidder);
+			try {
+				bidDAO.doInsert();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		} else {
 			try {
@@ -320,6 +334,8 @@ public class AuctionController extends HttpServlet {
 		}
 	}
 
+	
+	
 	private NewAuctionForm setNewAuctionForm(HttpServletRequest request,
 			List<FileItem> items) {
 		NewAuctionForm form = (NewAuctionForm) request.getSession()

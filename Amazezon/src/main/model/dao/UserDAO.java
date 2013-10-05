@@ -24,6 +24,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 	private boolean isAdmin;
 	private boolean banned;
 	private String messages;
+	private int userID;
 	
 	//positions of columns in database
 	private static final int USERID = 1;
@@ -66,6 +67,12 @@ public class UserDAO extends JDBCDriver implements Serializable {
 		
 		return username;
 	}
+	
+	public int getUserID() {
+		return userID;
+	}
+	
+	
 
 	public boolean getErrorInForm() {
 		return this.errorInForm;
@@ -232,6 +239,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 				String emailDB = null;
 				String addressDB = null;
 				int dobDB = 0;
+				int userIDDB = -1;
 				String creditCardDB = null;
 				boolean isAdminDB = false;
 				boolean bannedDB = false;
@@ -246,6 +254,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 					creditCardDB = rs.getString(CREDITCARD);
 					isAdminDB = rs.getBoolean(ISADMIN);
 					bannedDB = rs.getBoolean(BANNED);
+					userIDDB = rs.getInt(USERID);
 					
 				}
 				if (correctPass != null && correctPass.equals(password)) { //store the information about the user for the db into this object
@@ -262,6 +271,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 					this.creditCard = creditCardDB;
 					this.isAdmin = isAdminDB;
 					this.banned = bannedDB;
+					this.userID = userIDDB;
 				}
 			}
 			
@@ -295,6 +305,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 		this.creditCard = "";
 		this.loggedIn = false;
 		this.errorInForm = false;
+		this.userID = -1;
 	}
 	
 	//the following 2 functions are only here for the purpose of the userBean (easier to say userBean.isLoggedIn)

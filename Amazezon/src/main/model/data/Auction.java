@@ -1,13 +1,18 @@
 package main.model.data;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Date;
 import java.util.List;
+
+import main.model.dao.JDBCDriver;
 
 /**
  * Auction bean to describe an auction.
  */
-public class Auction implements Serializable {
+public class Auction extends JDBCDriver implements Serializable {
 	/**
 	 * 
 	 */
@@ -101,7 +106,48 @@ public class Auction implements Serializable {
 	public void setCategory(String category) {
 		this.category = category;
 	}
-	public boolean isClosed() {
+	public boolean getClosed() {
+		System.out.println("this was called");
+		if (!closed) {
+			Connection conn = null;
+
+			ResultSet rs = null;
+
+			String sql = "SELECT closed FROM Auctions WHERE auctionid=?;";
+
+			
+			
+			PreparedStatement pst = null;
+			try {
+				conn = getConnection();
+
+				pst = conn.prepareStatement(sql);
+				pst.setInt(1, auctionID);
+
+				rs = pst.executeQuery();
+				
+				// extract data from the ResultSet
+				// Convert to auction list.
+				if (rs.next()) { 
+					this.closed = rs.getBoolean("closed");
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (pst != null) {
+						pst.close();
+					}
+
+					if (conn != null) {
+						conn.close();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		return closed;
 	}
 	public void setClosed(boolean closed) {

@@ -335,7 +335,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 		String sql = "SELECT auctionid, userid, title, category, " +
 				"picture, description, postage, reserveprice, biddingstartprice, " +
 				"biddingincrement, endtime, firstname, lastname, username, password, " +
-				"email, address, yearofbirth, creditcard, halted, starttime " +
+				"email, address, yearofbirth, creditcard, halted, starttime, closed " +
 				"FROM Auctions JOIN Users ON Users.userID=Auctions.creator " +
 				"WHERE auctionid=?;";
 
@@ -379,6 +379,7 @@ public class AuctionDAO extends JDBCDriver implements Serializable {
 					auction.setBidIncrements(rs.getFloat("biddingincrement"));
 					auction.setClosingTime(rs.getInt("endtime"));
 					auction.setStartTime(rs.getTimestamp("starttime"));
+					auction.setClosed(rs.getBoolean("closed"));
 				}
 			}
 		} catch (Exception e) {
