@@ -265,18 +265,28 @@ public class AuctionController extends HttpServlet {
 			BidDAO bidDAO = new BidDAO();
 			
 			Date currentDate = new Date();
-			int bidAmount =  Integer.parseInt(request.getParameter("bidAmount"));
+			float bidAmount =  Float.parseFloat(request.getParameter("bidAmount"));
 			int bidder = userDAO.getUserID();
 			BidValidator bidValidator = new BidValidator();
-			bidValidator.validateBid(auctionDAO.getAuctionID(),bidAmount);
+			List<String> formMessages = bidValidator.validateBid(auctionDAO.getAuctionID(),bidAmount, bidder);
 			
-			bidDAO.setAttributes(auctionDAO.getAuctionID(), currentDate,bidAmount, bidder);
-			try {
-				bidDAO.doInsert();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (!formMessages.isEmpty() && formMessages.get(0).contains("Congratulations")) {
+				bidDAO.setAttributes(auctionDAO.getAuctionID(), currentDate,bidAmount, bidder);
+				try {
+					bidDAO.doInsert();
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} else {
+				
 			}
+			request.getSession().setAttribute("formMessages",
+					formMessages);
+			response.sendRedirect("viewauction.jsp");
+			
 			
 		} else {
 			try {

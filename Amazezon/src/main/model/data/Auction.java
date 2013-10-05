@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class Auction extends JDBCDriver implements Serializable {
 	private boolean closed;
 	private Date startTime;
 	
+	
 	// Getters and setters:
 	public int getAuctionID() {
 		return auctionID;
@@ -42,6 +44,32 @@ public class Auction extends JDBCDriver implements Serializable {
 	public User getOwner() {
 		return owner;
 	}
+	
+	public float getHighestBid() {
+		Connection conn = null;
+
+		ResultSet rs = null;
+		String sql = "select auction, max(bidprice) as maxBidPrice from bids where auction=? group by auction;";
+		float highest = startingPrice;
+		PreparedStatement pst = null;
+		try {
+			conn = getConnection();
+
+			pst = conn.prepareStatement(sql);
+			pst.setInt(1, auctionID);
+			
+
+			rs = pst.executeQuery();
+			// extract data from the ResultSet
+			if (rs.next()) {
+				highest = rs.getFloat("maxBidPrice");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return highest;
+	}
+	
 	public void setOwner(User owner) {
 		this.owner = owner;
 	}
@@ -156,6 +184,8 @@ public class Auction extends JDBCDriver implements Serializable {
 	public Date getStartTime() {
 		return startTime;
 	}
+	
+	
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}

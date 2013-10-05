@@ -44,7 +44,9 @@
 	</c:if>
 	<h2>Postage</h2>
 	<c:out value="${auctionBean.postageDetails}" />
-	<h2>Current Bid</h2>
+	<h2>Current Bid: <c:out value="${auctionBean.highestBid}" /> </h2> 
+	
+	
 	<!--  
 	<c:out value="${auctionBean.startingPrice}" /><br />
 	<c:out value="${auctionBean.bidIncrements}" /><br />-->
@@ -76,6 +78,13 @@
 		</form>
 	</c:if>
 	<c:if test="${userBean.loggedIn && not userBean.isAdmin && not auctionBean.closed}">
+		<c:if test="${formMessages != ''}">
+			<c:forEach var="message" items="${formMessages}">
+				<c:out value="${message}"/><br>
+			</c:forEach>
+			<c:set var="formMessages" scope="session"/>
+		</c:if>
+	
 		<form name="bidForm" action="controller" method="POST">
 			<input type="hidden" name="action" value="bid" />
 			<input type="text" name="bidAmount" />
