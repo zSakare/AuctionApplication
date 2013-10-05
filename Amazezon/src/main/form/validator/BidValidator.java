@@ -42,6 +42,10 @@ public class BidValidator extends JDBCDriver {
 				int maxBid = rs.getInt("maxBid");
 				int biddingIncrement = rs.getInt("biddingincrement");
 				int previousHighBidder = rs.getInt("bidder");
+				if (previousHighBidder != bidder) {
+					notifyMessage(previousHighBidder);
+				}
+				
 				if (bidAmount < maxBid+biddingIncrement) {
 					formMessages.add("The bid is not high enough");
 					System.out.println("not high enough");
@@ -132,4 +136,9 @@ public class BidValidator extends JDBCDriver {
 		}
 		return "";
 	}
+	
+	private void notifyMessage(int bidder) {
+		
+	}
 }
+
