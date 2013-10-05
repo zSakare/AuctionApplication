@@ -7,10 +7,31 @@
 <jsp:useBean id="userBean" class="main.model.dao.UserDAO" scope="session"/>
 <html>
 <head>
+	<style type="text/css">
+	    ul.horizontal {
+			margin:0;
+			padding:0;
+		}
+		
+		ul.horizontal li {
+			display:block;
+			float:left;
+			padding:0 10px;
+		}
+	</style>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>View Auction</title>
 </head>
 <body>
+	<ul class="horizontal">
+	    <li><a href="register.jsp">Register</a></li>
+	    <li><a href="login.jsp">Login</a></li>
+	    <li><a href="auction.jsp">Auction List</a></li>
+	    <li><a href="new-auction.jsp">New Auction</a></li>
+	    <li><a href="admin.jsp">Admin</a></li>
+	    <li><a href="userpage.jsp">Profile</a></li>
+	</ul>
+	<br>
 <c:if test="${auctionBean.title ne ''}">
 
 	<c:if test="${auctionBean.picture ne ''}">
@@ -42,6 +63,7 @@
 		<form name="haltAuctionForm" action="controller" method="POST">
 		<input type="hidden" name="action" value="haltAuction" />
 		<input type="hidden" name="auctionid" maxlength="50" value="${auctionBean.auctionID}"/>
+		<input type="hidden" name="title" maxlength="50" value="${auctionBean.title}"/>
 		<input type="submit" name="haltAuctionSubmit" value="Halt This Auction!" />
 		</form>
 		
@@ -49,6 +71,7 @@
 		<form name="removeAuctionForm" action="controller" method="POST">
 		<input type="hidden" name="action" value="removeAuction" />
 		<input type="hidden" name="auctionid" maxlength="50" value="${auctionBean.auctionID}"/>
+		<input type="hidden" name="title" maxlength="50" value="${auctionBean.title}"/>
 		<input type="submit" name="removeAuctionSubmit" value="Remove This Auction!" />
 		</form>
 	</c:if>

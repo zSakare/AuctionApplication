@@ -243,6 +243,7 @@ public class UserDAO extends JDBCDriver implements Serializable {
 				String creditCardDB = null;
 				boolean isAdminDB = false;
 				boolean bannedDB = false;
+				String messages = null;
 				//this loop should happen once
 				while (rs.next()) { //retrieving user information from db 
 					correctPass = rs.getString(PASSWORD);
@@ -256,6 +257,8 @@ public class UserDAO extends JDBCDriver implements Serializable {
 					bannedDB = rs.getBoolean(BANNED);
 					userIDDB = rs.getInt(USERID);
 					
+					messages = rs.getString("messages");
+
 				}
 				if (correctPass != null && correctPass.equals(password)) { //store the information about the user for the db into this object
 					
@@ -272,6 +275,8 @@ public class UserDAO extends JDBCDriver implements Serializable {
 					this.isAdmin = isAdminDB;
 					this.banned = bannedDB;
 					this.userID = userIDDB;
+					this.messages = messages;
+
 				}
 			}
 			
