@@ -77,13 +77,14 @@
 		<input type="submit" name="removeAuctionSubmit" value="Remove This Auction!" />
 		</form>
 	</c:if>
-	<c:if test="${userBean.loggedIn && not userBean.isAdmin && not auctionBean.closed}">
-		<c:if test="${formMessages != ''}">
+	<c:if test="${formMessages != ''}">
 			<c:forEach var="message" items="${formMessages}">
 				<c:out value="${message}"/><br>
 			</c:forEach>
 			<c:set var="formMessages" scope="session"/>
-		</c:if>
+	</c:if>
+	<c:if test="${userBean.loggedIn && not userBean.isAdmin && not auctionBean.closed}">
+		
 	
 		<form name="bidForm" action="controller" method="POST">
 			<input type="hidden" name="action" value="bid" />

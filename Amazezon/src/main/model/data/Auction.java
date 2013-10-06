@@ -66,6 +66,18 @@ public class Auction extends JDBCDriver implements Serializable {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+				
+				if (pst != null) {
+					pst.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return highest;
 	}

@@ -34,7 +34,7 @@
 	</ul>
 	<br>
 	<c:choose>
-		<c:when test="${userBean.loggedIn && not userBean.isAdmin}">
+		<c:when test="${userBean.loggedIn && not userBean.isAdmin && not userBean.banned}">
 			<c:if test="${formErrors != ''}">
 				<c:forEach var="formError" items="${formErrors}">
 					<c:out value="${formError.error}"/><br>

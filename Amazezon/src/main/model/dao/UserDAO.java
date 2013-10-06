@@ -104,7 +104,55 @@ public class UserDAO extends JDBCDriver implements Serializable {
 		
 		return firstName;
 	}
-
+	
+	public boolean getBanned() {
+		boolean banned = false;
+		
+		Connection conn = null;
+		
+		ResultSet rs = null;
+		
+	
+		String sql = "select banned from users where userid=?;";
+	
+		
+		
+		PreparedStatement pst = null;
+	
+		try {
+			conn = getConnection();
+	
+			pst = conn.prepareStatement(sql);
+			pst.setInt(1,this.userID);
+	
+			rs = pst.executeQuery();
+			if (rs.next()) {
+				banned = rs.getBoolean("banned");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+				
+				
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		return banned;
+	}
+	
+	
+	
 	public String getLastName() {
 		
 		return lastName;
@@ -318,7 +366,49 @@ public class UserDAO extends JDBCDriver implements Serializable {
 		return this.loggedIn;
 	}
 	public String getMessages() {
-		return this.messages;
+		String messagesToSend = "";
+		
+		Connection conn = null;
+		
+		ResultSet rs = null;
+		
+	
+		String sql = "select messages from users where userid=?;";
+	
+		
+		
+		PreparedStatement pst = null;
+	
+		try {
+			conn = getConnection();
+	
+			pst = conn.prepareStatement(sql);
+			pst.setInt(1,this.userID);
+	
+			rs = pst.executeQuery();
+			if (rs.next()) {
+				messagesToSend = rs.getString("messages");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null) {
+					pst.close();
+				}
+				
+				
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		setMessages("");
+		
+		return messagesToSend;
 	}
 	public void setMessages(String messages) {
 		this.messages = messages;

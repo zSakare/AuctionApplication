@@ -6,6 +6,7 @@
 <jsp:useBean id="searchForm" class="main.form.SearchForm" scope="page"/>
 <jsp:useBean id="auctionList" class="main.model.data.AuctionList" scope="session"/>
 <jsp:useBean id="auction" class="main.model.data.Auction" scope="session"/>
+<jsp:useBean id="userBean" class="main.model.dao.UserDAO" scope="session"/>
 <html>
 <head>
 	<style type="text/css">
@@ -33,6 +34,10 @@
 	    <li><a href="userpage.jsp">Profile</a></li>
 	</ul>
 	<br>
+	
+	<c:out value="${userBean.messages}" /> 
+	<br>
+	
 	<div id="search">
 		<form name="auctionSearchForm" action="controller" method="GET">
 			<input type="hidden" name="action" value="auctionSearch"/>
