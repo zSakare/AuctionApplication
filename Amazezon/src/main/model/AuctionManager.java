@@ -54,6 +54,13 @@ public class AuctionManager {
 						html = "Your auction for: " + auction.getTitle() + " has finished.";
 						sender.sendMessage("rofllol@gmail.com", auction.getOwner().getEmail(),
 								"Auction finished", html);
+					} else {
+						MailSender sender = MailSender.getMailSender();
+						String html = "Your auction for: " + auction.getTitle() + " has finished but the winning bid of " + bidPrice + " is lower than the reserved price of " + auction.getReservePrice() + "." +
+								" Click <a href='http://localhost:8080/Amazezon/accept=" + auctionID + "userid=" + userID + "'>Accept</a> to accept the winning bid." +
+								"Or click <a href='http://localhost:8080/Amazezon/reject=" + auctionID + "userid=" + userID + "'>Reject</a> to reject the winning bid.";
+						sender.sendMessage("rofllol@gmail.com", auction.getOwner().getEmail(),
+								"Auction finished", html);
 					}
 				}
 			} catch (InterruptedException e) {

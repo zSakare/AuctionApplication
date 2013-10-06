@@ -115,7 +115,7 @@ public class BidValidator extends JDBCDriver {
 		ResultSet rs = null;
 		
 
-		String sql = "select email from users where userid=1;";
+		String sql = "select email from users where userid=?;";
 
 		
 		
