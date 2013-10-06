@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -43,6 +45,9 @@ import org.apache.tomcat.util.codec.binary.Base64;
 @WebServlet(name = "AuctionController", urlPatterns = { "/AuctionController",
 		"/", "/home" })
 public class AuctionController extends HttpServlet {
+	private static final String USERID_REQUEST = "userid=";
+	private static final String USERNAME = "username";
+	private static final String REQUEST_POSITION = "Amazezon/";
 	private static final String AUCTION_SEARCH = "auctionSearch";
 	private static final String FORM = "form";
 	private static final long serialVersionUID = -4203748354523622984L;
@@ -96,15 +101,49 @@ public class AuctionController extends HttpServlet {
 			response.sendRedirect("auction.jsp");
 		} else {
 			StringBuffer sb = request.getRequestURL();
-			String username = sb.substring(sb.indexOf("=") + 1);
-
-			UserDAO userDAO = new UserDAO();
-			try {
-				userDAO.setConfirmed(username);
-				request.getSession().setAttribute("success", "true");
-				response.sendRedirect("confirm.jsp");
-			} catch (SQLException e) {
-				e.printStackTrace();
+			String requestType = sb.substring(sb.indexOf(REQUEST_POSITION) + REQUEST_POSITION.length());
+			if (requestType.contains(USERNAME)) {
+				String username = sb.substring(sb.indexOf("=") + 1);
+	
+				UserDAO userDAO = new UserDAO();
+				try {
+					userDAO.setConfirmed(username);
+					request.getSession().setAttribute("success", "true");
+					response.sendRedirect("confirm.jsp");
+				} catch (SQLException e) {
+					e.printStackTrace();
+					response.sendRedirect("error.jsp");
+				}
+			} else if (requestType.contains("accept") || requestType.contains("reject")) {
+				String auctionID = requestType.substring(requestType.indexOf("=") + 1, requestType.indexOf(USERID_REQUEST));
+				String userID = requestType.substring(requestType.indexOf(USERID_REQUEST) + USERID_REQUEST.length());
+				MailSender sender = MailSender.getMailSender();
+				UserDAO userDAO = new UserDAO();
+				AuctionDAO auctionDAO = new AuctionDAO();
+				Auction auction = auctionDAO.getAuctionWithID(Integer.parseInt(auctionID));
+				String email;
+				
+				try {
+					email = userDAO.findUserEmail(Integer.parseInt(userID));
+					if (requestType.contains("accept")) {
+						String html = "Congratulations, the owner of the auction for " + auction.getTitle() + " has accepted your bid.";
+						sender.sendMessage("rofllol@gmail.com", email, "Auction Winner!", html);
+						
+						response.sendRedirect("userpage.jsp");
+					} else if (requestType.contains("reject")) {
+						String html = "Unfortunately, the owner of " + auction.getTitle() + " has rejected your bid.";
+						sender.sendMessage("rofllol@gmail.com", email, "Winning Bid Rejected", html);
+						
+						response.sendRedirect("userpage.jsp");
+					} else {
+						response.sendRedirect("error.jsp");
+					}
+				} catch (NumberFormatException | SQLException | MessagingException e) {
+					e.printStackTrace();
+					response.sendRedirect("error.jsp");
+				}
+				
+			} else {
 				response.sendRedirect("error.jsp");
 			}
 		}
@@ -175,7 +214,7 @@ public class AuctionController extends HttpServlet {
 
 		} else if (LOGIN.equals(request.getParameter(ACTION))) {
 
-			String username = request.getParameter("username");
+			String username = request.getParameter(USERNAME);
 			String password = request.getParameter("password");
 			UserDAO userBean = (UserDAO) request.getSession().getAttribute(
 					"userBean"); // get the bean the user created
@@ -197,7 +236,7 @@ public class AuctionController extends HttpServlet {
 					"userBean")).loginAsAdmin(); // get the bean the user
 													// created
 
-			String userToBan = request.getParameter("username");
+			String userToBan = request.getParameter(USERNAME);
 			if (userBean != null) { // if it is not null, it has successfully
 									// been logged in as admin
 				userBean.ban(userToBan);
@@ -380,7 +419,7 @@ public class AuctionController extends HttpServlet {
 			form = new RegistrationForm();
 		}
 
-		form.setUsername(request.getParameter("username"));
+		form.setUsername(request.getParameter(USERNAME));
 		form.setFirstname(request.getParameter("firstName"));
 		form.setLastname(request.getParameter("lastName"));
 		form.setPassword(request.getParameter("password"));
