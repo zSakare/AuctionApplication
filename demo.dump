@@ -1,0 +1,329 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: auctions; Type: TABLE; Schema: public; Owner: AlbertWang; Tablespace: 
+--
+
+CREATE TABLE auctions (
+    auctionid integer NOT NULL,
+    creator integer,
+    title character varying(100) NOT NULL,
+    category text,
+    picture text,
+    description character varying(750),
+    postage text NOT NULL,
+    reserveprice double precision NOT NULL,
+    biddingstartprice double precision NOT NULL,
+    biddingincrement double precision NOT NULL,
+    endtime integer DEFAULT 10,
+    starttime timestamp without time zone DEFAULT now(),
+    halted boolean DEFAULT false,
+    closed boolean DEFAULT false
+);
+
+
+ALTER TABLE public.auctions OWNER TO "AlbertWang";
+
+--
+-- Name: auctions_auctionid_seq; Type: SEQUENCE; Schema: public; Owner: AlbertWang
+--
+
+CREATE SEQUENCE auctions_auctionid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.auctions_auctionid_seq OWNER TO "AlbertWang";
+
+--
+-- Name: auctions_auctionid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: AlbertWang
+--
+
+ALTER SEQUENCE auctions_auctionid_seq OWNED BY auctions.auctionid;
+
+
+--
+-- Name: bids; Type: TABLE; Schema: public; Owner: AlbertWang; Tablespace: 
+--
+
+CREATE TABLE bids (
+    bidid integer NOT NULL,
+    auction integer,
+    bidtime bigint,
+    bidprice double precision NOT NULL
+);
+
+
+ALTER TABLE public.bids OWNER TO "AlbertWang";
+
+--
+-- Name: bids_bidid_seq; Type: SEQUENCE; Schema: public; Owner: AlbertWang
+--
+
+CREATE SEQUENCE bids_bidid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.bids_bidid_seq OWNER TO "AlbertWang";
+
+--
+-- Name: bids_bidid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: AlbertWang
+--
+
+ALTER SEQUENCE bids_bidid_seq OWNED BY bids.bidid;
+
+
+--
+-- Name: user_has_bids; Type: TABLE; Schema: public; Owner: AlbertWang; Tablespace: 
+--
+
+CREATE TABLE user_has_bids (
+    bidder integer NOT NULL,
+    bid integer NOT NULL
+);
+
+
+ALTER TABLE public.user_has_bids OWNER TO "AlbertWang";
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: AlbertWang; Tablespace: 
+--
+
+CREATE TABLE users (
+    userid integer NOT NULL,
+    firstname character varying(50),
+    lastname character varying(50),
+    username character varying(50) NOT NULL,
+    password character varying(50) NOT NULL,
+    email character varying(100) NOT NULL,
+    address character varying(100),
+    yearofbirth integer,
+    creditcard character varying(19) NOT NULL,
+    confirmed boolean DEFAULT false,
+    isadmin boolean,
+    banned boolean DEFAULT false,
+    messages text
+);
+
+
+ALTER TABLE public.users OWNER TO "AlbertWang";
+
+--
+-- Name: users_userid_seq; Type: SEQUENCE; Schema: public; Owner: AlbertWang
+--
+
+CREATE SEQUENCE users_userid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_userid_seq OWNER TO "AlbertWang";
+
+--
+-- Name: users_userid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: AlbertWang
+--
+
+ALTER SEQUENCE users_userid_seq OWNED BY users.userid;
+
+
+--
+-- Name: auctionid; Type: DEFAULT; Schema: public; Owner: AlbertWang
+--
+
+ALTER TABLE ONLY auctions ALTER COLUMN auctionid SET DEFAULT nextval('auctions_auctionid_seq'::regclass);
+
+
+--
+-- Name: bidid; Type: DEFAULT; Schema: public; Owner: AlbertWang
+--
+
+ALTER TABLE ONLY bids ALTER COLUMN bidid SET DEFAULT nextval('bids_bidid_seq'::regclass);
+
+
+--
+-- Name: userid; Type: DEFAULT; Schema: public; Owner: AlbertWang
+--
+
+ALTER TABLE ONLY users ALTER COLUMN userid SET DEFAULT nextval('users_userid_seq'::regclass);
+
+
+--
+-- Data for Name: auctions; Type: TABLE DATA; Schema: public; Owner: AlbertWang
+--
+
+COPY auctions (auctionid, creator, title, category, picture, description, postage, reserveprice, biddingstartprice, biddingincrement, endtime, starttime, halted, closed) FROM stdin;
+\.
+
+
+--
+-- Name: auctions_auctionid_seq; Type: SEQUENCE SET; Schema: public; Owner: AlbertWang
+--
+
+SELECT pg_catalog.setval('auctions_auctionid_seq', 1, false);
+
+
+--
+-- Data for Name: bids; Type: TABLE DATA; Schema: public; Owner: AlbertWang
+--
+
+COPY bids (bidid, auction, bidtime, bidprice) FROM stdin;
+\.
+
+
+--
+-- Name: bids_bidid_seq; Type: SEQUENCE SET; Schema: public; Owner: AlbertWang
+--
+
+SELECT pg_catalog.setval('bids_bidid_seq', 1, false);
+
+
+--
+-- Data for Name: user_has_bids; Type: TABLE DATA; Schema: public; Owner: AlbertWang
+--
+
+COPY user_has_bids (bidder, bid) FROM stdin;
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: AlbertWang
+--
+
+COPY users (userid, firstname, lastname, username, password, email, address, yearofbirth, creditcard, confirmed, isadmin, banned, messages) FROM stdin;
+1	admin	admin	Admin	admin	albertwang2002@hotmail.com	12 admin street	1980	10291029102910	t	t	f	
+2	Devil	Satan	Devil	password	albertwang2002@hotmail.com	77 Evil Street	1992	6666666666666	t	f	f	
+3	Bob	Smith	Blobby	password	albertwang2002@hotmail.com	46 Blobby road	1950	8289372736172	t	f	f	
+\.
+
+
+--
+-- Name: users_userid_seq; Type: SEQUENCE SET; Schema: public; Owner: AlbertWang
+--
+
+SELECT pg_catalog.setval('users_userid_seq', 3, true);
+
+
+--
+-- Name: auctions_pkey; Type: CONSTRAINT; Schema: public; Owner: AlbertWang; Tablespace: 
+--
+
+ALTER TABLE ONLY auctions
+    ADD CONSTRAINT auctions_pkey PRIMARY KEY (auctionid);
+
+
+--
+-- Name: bids_pkey; Type: CONSTRAINT; Schema: public; Owner: AlbertWang; Tablespace: 
+--
+
+ALTER TABLE ONLY bids
+    ADD CONSTRAINT bids_pkey PRIMARY KEY (bidid);
+
+
+--
+-- Name: user_has_bids_pkey; Type: CONSTRAINT; Schema: public; Owner: AlbertWang; Tablespace: 
+--
+
+ALTER TABLE ONLY user_has_bids
+    ADD CONSTRAINT user_has_bids_pkey PRIMARY KEY (bidder, bid);
+
+
+--
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: AlbertWang; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (userid);
+
+
+--
+-- Name: users_username_key; Type: CONSTRAINT; Schema: public; Owner: AlbertWang; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_username_key UNIQUE (username);
+
+
+--
+-- Name: auctions_creator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: AlbertWang
+--
+
+ALTER TABLE ONLY auctions
+    ADD CONSTRAINT auctions_creator_fkey FOREIGN KEY (creator) REFERENCES users(userid);
+
+
+--
+-- Name: bids_auction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: AlbertWang
+--
+
+ALTER TABLE ONLY bids
+    ADD CONSTRAINT bids_auction_fkey FOREIGN KEY (auction) REFERENCES auctions(auctionid);
+
+
+--
+-- Name: user_has_bids_bid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: AlbertWang
+--
+
+ALTER TABLE ONLY user_has_bids
+    ADD CONSTRAINT user_has_bids_bid_fkey FOREIGN KEY (bid) REFERENCES bids(bidid);
+
+
+--
+-- Name: user_has_bids_bidder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: AlbertWang
+--
+
+ALTER TABLE ONLY user_has_bids
+    ADD CONSTRAINT user_has_bids_bidder_fkey FOREIGN KEY (bidder) REFERENCES users(userid);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: AlbertWang
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM "AlbertWang";
+GRANT ALL ON SCHEMA public TO "AlbertWang";
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
