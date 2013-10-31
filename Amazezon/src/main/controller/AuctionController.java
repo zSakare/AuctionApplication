@@ -400,14 +400,20 @@ public class AuctionController extends HttpServlet {
 		}
 		form.setTitle(items.get(1).getString());
 		form.setCategory(items.get(2).getString());
-		form.setPicture(new Base64().encodeToString(items.get(3).get()));
-		form.setDescription(items.get(4).getString());
-		form.setPostageDetails(items.get(5).getString());
-		form.setPostageDetails(items.get(5).getString());
-		form.setReservePrice(items.get(6).getString());
-		form.setBiddingStartPrice(items.get(7).getString());
-		form.setBiddingIncrement(items.get(8).getString());
-		form.setEndTime(items.get(9).getString());
+		int i = 4;
+		if (items.size() == 11) {
+			form.setPicture(new Base64().encodeToString(items.get(3).get()));
+			System.out.println("received a picture");
+		} else {
+			i = 3;
+		}
+			form.setDescription(items.get(i++).getString());
+			form.setPostageDetails(items.get(i++).getString());
+			form.setReservePrice(items.get(i++).getString());
+			form.setBiddingStartPrice(items.get(i++).getString());
+			form.setBiddingIncrement(items.get(i++).getString());
+			form.setEndTime(items.get(i++).getString());
+		
 		return form;
 	}
 
